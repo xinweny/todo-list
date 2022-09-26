@@ -6,3 +6,29 @@
 li {
 	list-style-type: none;
 }
+
+body {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	grid-template-rows: auto 1fr auto;
+	height: 100vh;
+}
+
+#header {
+	display: flex;
+	grid-column: 1 / -1;
+}
+
+#header img {
+	width: 50px;
+	height: auto;
+}
+
+#content {
+	height: 100%;
+}
+
+#footer {
+	grid-column: 1 / -1;
+}
+
