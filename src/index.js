@@ -1,3 +1,2 @@
 import './style.css';
-
-console.log("hello")
+import Controller from './Controller.js';
