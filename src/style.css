@@ -24,6 +24,12 @@ li {
 	height: auto;
 }
 
+.sidebar-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
 #content {
 	height: 100%;
 }
