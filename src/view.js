@@ -1,45 +1,61 @@
 import Controller from './Controller.js';
 
 const View = (() => {
+	// Cached elements
+	const _elements = {
+		content: _getElement('#content'),
+		projectList: _getElement('#project-list')
+	};
+
 	// Helpers
-	function createElement(tag, className) {
+	function _createElement(tag, className) {
 		const element = document.createElement(tag);
 		if (className) element.classList.add(className);
 		return element;
 	}
 
-	function getElement(selector) {
+	function _getElement(selector) {
 		return document.querySelector(selector);
 	}
 
-	function getElements(selector) {
+	function _getElements(selector) {
 		return document.querySelectorAll(selector);
 	}
 
-	function displayToDos(todos) {
+	function _appendChild(parent, child) {
+		_elements[parent].appendChild(child);
+	}
+
+	function displayTodos(todos) {
 		for (const todo of todos) {
-			
+			let div = _createElement('div', 'todo-card');
+			div.dataset.id = todo.id;
+			div.textContent = todo.title;
+
+			_appendChild('content', div);
 		}
 	}
 
-	// Cached elements
-	const elements = {
-		content: getElement('#content'),
-		all: getElement('#all')
-	};
+	function displayProjects(projects) {
+		for (const project of projects) {
+			let li = _createElement('li', 'project-btn');
+			li.dataset.id = project.id;
+			li.textContent = project.title;
+
+			_appendChild('projectList', li);
+		}
+	}
+
+	function clearContent() {
+		_elements['content'].innerHTML = null;
+	}
 
 	// Binders for controller handlers to event listeners
 
-	// Initializer
-	const _init = (() => {
-		
-	})();
-
 	return {
-		elements,
-		createElement,
-		getElement,
-		getElements
+		displayTodos,
+		displayProjects,
+		clearContent
 	};
 })();
 

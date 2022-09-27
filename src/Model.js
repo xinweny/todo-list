@@ -1,26 +1,29 @@
-import ToDo from './ToDo.js';
+import Todo from './Todo.js';
 import Project from './Project.js';
 
 const Model = (() => {
-	let _toDos = [];
+	let _todos = [];
 	let _projects = [];
 
-	const getToDos = () => _toDos;
+	const getTodos = () => _todos;
 	const getProjects = () => _projects;
-	const getToDo = (id) => _toDos.find(todo => todo.id == id);
-	const getProject = (id) => _projects.find(project => project.id == id);
+	const getTodo = id => _todos.find(todo => todo.id == id);
+	const getProject = id => _projects.find(project => project.id == id);
 
-	const getTodoProject = (todo) => {
-		_projects.find(project => project.id == todo.projectId);
+	const getProjectFromTodo = todo => {
+		return _projects.find(project => project.id == todo.projectId);
+	}
+	const getTodosOfProject = project => {
+		return _todos.filter(todo => project.todoIds.includes(todo.id));
 	}
 
-	function createToDo(title, description, dueDate, priority, project) {
-		const toDo = ToDo(title, description, dueDate, priority);
+	function createTodo(title, description, dueDate, priority, project) {
+		const todo = Todo(title, description, dueDate, priority);
 
-		_toDos.push(toDo);
-		if (project) _linkToDoAndProject(toDo, project);
+		_todos.push(todo);
+		if (project) _linkTodoAndProject(todo, project);
 
-		return toDo;
+		return todo;
 	}
 
 	function createProject(title) {
@@ -30,38 +33,39 @@ const Model = (() => {
 		return project;
 	}
 
-	function deleteToDo(toDo) {
-		const index = _toDos.indexOf(toDo);
-		_toDos.splice(index, 1);
+	function deleteTodo(todo) {
+		const index = _todos.indexOf(todo);
+		_todos.splice(index, 1);
 
-		if (toDo.projectId) {
-			const project = getProject(toDo.projectId);
+		if (todo.projectId) {
+			const project = getProject(todo.projectId);
 			project.deleteTodoId();
 		};
 	}
 
 	function deleteProject(project) {
 		const todoIds = project.getTodoIds();
-		_toDos = _toDos.filter(todo => !todoIds.includes(todo.id));
+		_todos = _todos.filter(todo => !todoIds.includes(todo.id));
 
 		const index = _projects.indexOf(project);
 		_projects.splice(index, 1);
 	}
 
-	function _linkToDoAndProject(toDo, project) {
-		toDo.setProjectId(project.id);
-		project.addTodoId(toDo.id)
+	function _linkTodoAndProject(todo, project) {
+		todo.setProjectId(project.id);
+		project.addTodoId(todo.id)
 	}
 
 	return {
-		getToDos,
+		getTodos,
 		getProjects,
-		getToDo,
+		getTodo,
 		getProject,
-		getTodoProject,
-		createToDo,
+		getProjectFromTodo,
+		getTodosOfProject,
+		createTodo,
 		createProject,
-		deleteToDo,
+		deleteTodo,
 		deleteProject
 	};
 })();

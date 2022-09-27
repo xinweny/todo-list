@@ -7,7 +7,7 @@ const todoProto = Object.assign({
 	}
 }, idMixin);
 
-export default function ToDo(title, description, dueDate, priority) {
+export default function Todo(title, description, dueDate, priority) {
 	let obj = Object.create(todoProto);
 	
 	obj.setId();

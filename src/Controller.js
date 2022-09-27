@@ -1,13 +1,18 @@
-import add from 'date-fns/add';
 import Model from './Model.js';
 import View from './View.js';
 
 const Controller = (() => {
-	const a = Model.createProject('a')
-	Model.createProject('b')
+	let toDos = Model.getTodos();
+	let projects = Model.getProjects();
 
-	Model.createToDo('a', 'b', 'c', 'd', a)
-	const b = Model.createToDo('e', 'f', 'g', 'h')
+	const a = Model.createProject('Shopping List')
+	Model.createProject('Study')
+
+	Model.createTodo('a', 'b', 'c', 'd', a)
+	const b = Model.createTodo('e', 'f', 'g', 'h')
+
+	View.displayTodos(toDos);
+	View.displayProjects(projects);
 
 	return {};
 })();
