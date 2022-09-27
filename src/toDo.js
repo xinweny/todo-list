@@ -1,10 +1,11 @@
-const todoProto = {
+import { idMixin } from './mixins.js';
+
+const todoProto = Object.assign({
 	nextId: 0,
-	setId() {
-		this.id = Object.getPrototypeOf(this).nextId;
-		Object.getPrototypeOf(this).nextId += 1;
+	setProjectId: function(id) {
+		this.projectId = id;
 	}
-};
+}, idMixin);
 
 export default function ToDo(title, description, dueDate, priority) {
 	let obj = Object.create(todoProto);

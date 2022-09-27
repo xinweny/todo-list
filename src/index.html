@@ -6,23 +6,26 @@
 	<title>TODO List</title>
 </head>
 <body>
-	<div id="header">
-		<img src="./assets/icon.png" alt="">
-		<h1>TODO List</h1>
-	</div>
-	<div id="sidebar">
-		<ul id="category-list">
-			<li>All</li>
-			<li>Today</li>
-			<li>This Week</li>
-			<li>Priority</li>
-		</ul>
-		<h2>Projects</h2>
-		<ul id="project-list"></ul>
-	</div>
-	<div id="content"></div>
-	<div id="footer">
-		<p>Made by <a href="https://github.com/xinweny">xinweny</a> in 2022</p>
+	<div id="root">
+		<div id="header">
+			<img src="./assets/icon.png" alt="">
+			<h1>TODO List</h1>
+		</div>
+		<div id="sidebar">
+			<ul id="todo-categories">
+				<li id="all-todos">All</li>
+				<li id="today-todos">Today</li>
+				<li id="week-todos">This Week</li>
+			</ul>
+			<button id="add-todo">+</button>
+			<h2>Projects</h2>
+			<ul id="project-list"></ul>
+			<h2>Notes</h2>
+		</div>
+		<div id="content"></div>
+		<div id="footer">
+			<p>Made by <a href="https://github.com/xinweny">xinweny</a> in 2022</p>
+		</div>
 	</div>
 </body>
 </html>
