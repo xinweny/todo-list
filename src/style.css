@@ -41,6 +41,15 @@ li {
 	padding: 16px;
 }
 
+.todo-card {
+	display: flex;
+	align-items: center;
+}
+
+.completed p {
+	text-decoration: line-through;
+}
+
 #footer {
 	grid-column: 1 / -1;
 	padding: 16px;

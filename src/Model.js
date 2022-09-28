@@ -6,16 +6,24 @@ const Model = (() => {
 	let _projects = [];
 
 	const getTodos = () => _todos;
+
 	const getProjects = () => _projects;
+
 	const getTodo = id => _todos.find(todo => todo.id == id);
+
 	const getProject = id => _projects.find(project => project.id == id);
 
 	const getProjectFromTodo = todo => {
 		return _projects.find(project => project.id == todo.projectId);
 	}
+
 	const getTodosOfProject = project => {
-		return _todos.filter(todo => project.todoIds.includes(todo.id));
+		return _todos.filter(todo => project.getTodoIds().includes(todo.id));
 	}
+
+	const getUncompletedTodos = todos => todos.filter(todo => !todo.complete);
+
+	const filterTodos = filter => _todos.filter(filter);
 
 	function createTodo(title, description, dueDate, priority, project) {
 		const todo = Todo(title, description, dueDate, priority);
@@ -31,6 +39,19 @@ const Model = (() => {
 		_projects.push(project);
 
 		return project;
+	}
+
+	function editTodo(id, title, description, dueDate, priority) {
+		const todo = getTodo(id);
+		if (title) todo.title = title;
+		if (description) todo.title = description;
+		if (dueDate) todo.title = dueDate;
+		if (priority) todo.title = priority;
+	}
+
+	function editProject(id, title) {
+		const project = getProject(id);
+		if (title) project.title = title;
 	}
 
 	function deleteTodo(todo) {
@@ -63,8 +84,12 @@ const Model = (() => {
 		getProject,
 		getProjectFromTodo,
 		getTodosOfProject,
+		getUncompletedTodos,
+		filterTodos,
 		createTodo,
 		createProject,
+		editTodo,
+		editProject,
 		deleteTodo,
 		deleteProject
 	};

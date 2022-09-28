@@ -4,6 +4,9 @@ const todoProto = Object.assign({
 	nextId: 0,
 	setProjectId: function(id) {
 		this.projectId = id;
+	},
+	toggleComplete: function() {
+		this.complete = !this.complete;
 	}
 }, idMixin);
 
