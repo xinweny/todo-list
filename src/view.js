@@ -4,6 +4,8 @@ const View = (() => {
 		todoGroup: _getElement('#todo-group'),
 		todoCards: _getElement('.todo-cards'),
 		projectList: _getElement('#project-list'),
+		addProjectBtn: _getElement('#add-project-btn'),
+		projectTitleInput: _getElement('#project-title'),
 		addTodoForm: _getElement('#add-todo-form'),
 		todoTitleInput: _getElement('#todo-title')
 	};
@@ -49,6 +51,15 @@ const View = (() => {
 		return todoCard
 	}
 
+	function _clearElement(element) {
+		element.innerHTML = null;
+	}
+
+	function _clearText(element) {
+		element.value = '';
+	}
+
+	// Render elements
 	function displayTodos(todos) {
 		_clearElement(_elements.todoCards);
 		_clearText(_elements.todoTitleInput);
@@ -71,12 +82,12 @@ const View = (() => {
 		}
 	}
 
-	function _clearElement(element) {
-		element.innerHTML = null;
-	}
+	function toggleProjectForm() {
+		_elements.addProjectBtn.addEventListener('click', event => {
+			const display = _elements.projectTitleInput.style.display;
 
-	function _clearText(element) {
-		element.value = '';
+			_elements.projectTitleInput.style.display = (display == '') ? 'block' : '';
+		});
 	}
 
 	// Binders for controller handlers to event listeners
@@ -125,14 +136,27 @@ const View = (() => {
 			checkbox.parentElement.classList.toggle('completed');
 		})
 	}
+
+	function bindAddProject(handler) {
+		_elements.projectTitleInput.addEventListener('focusout', event => {
+			const title = _elements.projectTitleInput.value;
+
+			handler(title);
+
+			_clearText(_elements.projectTitleInput);
+			_elements.projectTitleInput.style.display = '';
+		});
+	}
 	
 	return {
 		displayTodos,
 		displayProjects,
+		toggleProjectForm,
 		bindShowCategoryTodos,
 		bindShowProjectTodos,
 		bindAddTodo,
-		bindToggleComplete
+		bindToggleComplete,
+		bindAddProject
 	};
 })();
 

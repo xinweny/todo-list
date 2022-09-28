@@ -27,13 +27,20 @@
 					<h2>Projects</h2>
 					<button id="add-project-btn" class="sidebar-btn">+</button>
 				</div>
+				<input type="text" id="project-title" placeholder="New project">
 				<ul id="project-list"></ul>
 			</div>
 		</div>
 		<div id="content">
 			<h2 id="todo-group" data-filter="all">All</h2>
 			<form id="add-todo-form">
-				<input type="text" id="todo-title">
+				<input type="text" id="todo-title" placeholder="Add your TODO" required>
+				<select name="priority" id="priority">
+					<option value="low">Low</option>
+					<option value="medium">Medium</option>
+					<option value="high">High</option>
+				</select>
+				<input type="datetime-local" id="duedate">
 				<button>+</button>
 			</form>
 			<div class="todo-cards"></div>

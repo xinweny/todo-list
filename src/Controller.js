@@ -19,9 +19,6 @@ const Controller = (() => {
 	}
 
 	const handleAddTodo = (title, description, dueDate, priority, group) => {
-		let todo = null;
-		let todos = []
-
 		if ('projectId' in group) {
 			const project = Model.getProject(group.projectId);
 			Model.createTodo(title, description, dueDate, priority, project);
@@ -34,6 +31,10 @@ const Controller = (() => {
 
 	const handleToggleComplete = todo => todo.toggleComplete();
 
+	const handleAddProject = title => {
+		Model.createProject(title);
+	}
+
 	// Callback for model when change is detected to bind handlers to event listener binders of View
 	function onTodosChanged(todos) {
 		View.displayTodos(todos);
@@ -44,7 +45,7 @@ const Controller = (() => {
 	}
 
 	function onProjectsChanged(projects) {
-		View.displayProjects(projects);
+		View.displayProjects(projects.reverse());
 
 		for (const project of projects) {
 			View.bindShowProjectTodos(project, handleShowProjectTodos);
@@ -57,6 +58,8 @@ const Controller = (() => {
 		Model.bindModelChanged('onProjectsChanged', onProjectsChanged);
 
 		View.bindAddTodo(handleAddTodo);
+		View.bindAddProject(handleAddProject);
+		View.toggleProjectForm();
 		for (const [category, f] of Object.entries(_filter)) {
 			View.bindShowCategoryTodos(category, handleShowCategoryTodos.bind(null, f));
 		}

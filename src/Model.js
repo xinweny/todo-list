@@ -57,6 +57,7 @@ const Model = (() => {
 		const project = Project(title);
 		_projects.push(project);
 
+		this.onProjectsChanged(_projects);
 		return project;
 	}
 

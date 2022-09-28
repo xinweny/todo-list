@@ -30,6 +30,10 @@ li {
 	padding: 16px;
 }
 
+#project-title {
+	display: none;
+}
+
 .sidebar-header {
 	display: flex;
 	justify-content: space-between;
@@ -40,6 +44,11 @@ li {
 	height: 100%;
 	padding: 16px;
 }
+
+input[type="datetime-local"]::-webkit-datetime-edit {
+	display:none;
+}
+
 
 .todo-card {
 	display: flex;
@@ -54,4 +63,3 @@ li {
 	grid-column: 1 / -1;
 	padding: 16px;
 }
-
