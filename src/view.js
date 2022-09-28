@@ -22,10 +22,6 @@ const View = (() => {
 		return document.querySelector(selector);
 	}
 
-	function _getElements(selector) {
-		return document.querySelectorAll(selector);
-	}
-
 	function _appendChild(parent, child) {
 		return _elements[parent].appendChild(child);
 	}
@@ -54,6 +50,9 @@ const View = (() => {
 	}
 
 	function displayTodos(todos) {
+		_clearElement(_elements.todoCards);
+		_clearText(_elements.todoTitleInput);
+
 		for (const todo of todos) {
 			const todoCard = _createTodoCard(todo);
 			_appendChild('todoCards', todoCard);
@@ -61,6 +60,8 @@ const View = (() => {
 	}
 
 	function displayProjects(projects) {
+		_clearElement(_elements.projectList);
+
 		for (const project of projects) {
 			let li = _createElement('li', 'project-btn');
 			li.dataset.id = project.id;
@@ -88,9 +89,6 @@ const View = (() => {
 			_elements.todoGroup.innerText = event.target.textContent;
 			_elements.todoGroup.removeAttribute('data-project-id');
 			_elements.todoGroup.dataset.filter = category;
-
-			_clearElement(_elements.todoCards);
-			displayTodos(todos);
 		});
 	}
 
@@ -103,9 +101,6 @@ const View = (() => {
 			_elements.todoGroup.innerText = project.title;
 			_elements.todoGroup.removeAttribute('data-filter');
 			_elements.todoGroup.dataset.projectId = project.id;
-
-			_clearElement(_elements.todoCards);
-			displayTodos(todos);
 		});
 	}
 	
@@ -116,11 +111,7 @@ const View = (() => {
 
 			if (title != '') {
 				const group = _elements.todoGroup.dataset;
-				const todos = handler(title, null, null, null, group);
-
-				_clearText(_elements.todoTitleInput);
-				_clearElement(_elements.todoCards);
-				displayTodos(todos);
+				handler(title, null, null, null, group);
 			}
 		});
 	}
@@ -129,7 +120,6 @@ const View = (() => {
 		const checkbox = _getElement(`input[data-id="${todo.id}"]`);
 		checkbox.addEventListener('click', event => {
 			handler(todo);
-			console.log("hi")
 
 			checkbox.checked = todo.complete;
 			checkbox.parentElement.classList.toggle('completed');

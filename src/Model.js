@@ -1,13 +1,22 @@
 import Todo from './Todo.js';
 import Project from './Project.js';
+import Controller from './Controller.js';
 
 const Model = (() => {
 	let _todos = [];
 	let _projects = [];
 
-	const getTodos = () => _todos;
+	function getTodos() {
+		this.onTodosChanged(_todos);
 
-	const getProjects = () => _projects;
+		return _todos;
+	};
+
+	function getProjects() {
+		this.onProjectsChanged(_projects);
+
+		return _projects;
+	}
 
 	const getTodo = id => _todos.find(todo => todo.id == id);
 
@@ -17,13 +26,23 @@ const Model = (() => {
 		return _projects.find(project => project.id == todo.projectId);
 	}
 
-	const getTodosOfProject = project => {
-		return _todos.filter(todo => project.getTodoIds().includes(todo.id));
+	function getTodosOfProject(project) {
+		const todos = _todos.filter(todo => project.getTodoIds().includes(todo.id));
+
+		this.onTodosChanged(todos);
+
+		return todos;
 	}
 
 	const getUncompletedTodos = todos => todos.filter(todo => !todo.complete);
 
-	const filterTodos = filter => _todos.filter(filter);
+	function filterTodos(filter) {
+		const todos = _todos.filter(filter);
+
+		this.onTodosChanged(todos);
+
+		return todos;
+	}
 
 	function createTodo(title, description, dueDate, priority, project) {
 		const todo = Todo(title, description, dueDate, priority);
@@ -77,6 +96,11 @@ const Model = (() => {
 		project.addTodoId(todo.id)
 	}
 
+	// Bind model to controller via callback
+	function bindModelChanged(key, callback) {
+		this[key] = callback;
+	}
+
 	return {
 		getTodos,
 		getProjects,
@@ -91,7 +115,8 @@ const Model = (() => {
 		editTodo,
 		editProject,
 		deleteTodo,
-		deleteProject
+		deleteProject,
+		bindModelChanged
 	};
 })();
 
