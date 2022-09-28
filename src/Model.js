@@ -72,6 +72,8 @@ const Model = (() => {
 	function editProject(id, title) {
 		const project = getProject(id);
 		if (title) project.title = title;
+
+		this.onProjectsChanged(_projects);
 	}
 
 	function deleteTodo(todo) {

@@ -32,15 +32,19 @@
 			</div>
 		</div>
 		<div id="content">
-			<h2 id="todo-group" data-filter="all">All</h2>
+			<div class="todo-group-header">
+				<h2 id="todo-group" data-filter="all">All</h2>
+				<input type="text" id="edit-project-title">
+			</div>
 			<form id="add-todo-form">
 				<input type="text" id="todo-title" placeholder="Add your TODO" required>
-				<select name="priority" id="priority">
+				<select name="priority" id="todo-priority">
+					<option value="none" disabled selected hidden>Priority</option>
 					<option value="low">Low</option>
 					<option value="medium">Medium</option>
 					<option value="high">High</option>
 				</select>
-				<input type="datetime-local" id="duedate">
+				<input type="datetime-local" id="todo-duedate">
 				<button>+</button>
 			</form>
 			<div class="todo-cards"></div>

@@ -31,9 +31,9 @@ const Controller = (() => {
 
 	const handleToggleComplete = todo => todo.toggleComplete();
 
-	const handleAddProject = title => {
-		Model.createProject(title);
-	}
+	const handleAddProject = title => Model.createProject(title);
+
+	const handleEditProject = (id, title) => Model.editProject(id, title);
 
 	// Callback for model when change is detected to bind handlers to event listener binders of View
 	function onTodosChanged(todos) {
@@ -45,7 +45,7 @@ const Controller = (() => {
 	}
 
 	function onProjectsChanged(projects) {
-		View.displayProjects(projects.reverse());
+		View.displayProjects(projects);
 
 		for (const project of projects) {
 			View.bindShowProjectTodos(project, handleShowProjectTodos);
@@ -59,7 +59,12 @@ const Controller = (() => {
 
 		View.bindAddTodo(handleAddTodo);
 		View.bindAddProject(handleAddProject);
-		View.toggleProjectForm();
+
+		View.bindToggleProjectForm();
+		View.bindShowEditProjectForm();
+
+		View.bindEditProject(handleEditProject);
+
 		for (const [category, f] of Object.entries(_filter)) {
 			View.bindShowCategoryTodos(category, handleShowCategoryTodos.bind(null, f));
 		}
@@ -67,8 +72,8 @@ const Controller = (() => {
 		const a = Model.createProject('Shopping List');
 		Model.createProject('Study');
 
-		Model.createTodo('a', 'b', 'c', 'd', a);
-		const b = Model.createTodo('e', 'f', 'g', 'h');
+		Model.createTodo('a', 'b', 'c', 'low', a);
+		const b = Model.createTodo('e', 'f', 'g', 'high');
 
 		Model.getTodos();
 		Model.getProjects();
@@ -76,7 +81,8 @@ const Controller = (() => {
 
 	return {
 		onTodosChanged,
-		onProjectsChanged
+		onProjectsChanged,
+		handleEditProject
 	};
 })();
 
