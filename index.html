@@ -12,26 +12,32 @@
 			<h1>TODO List</h1>
 		</div>
 		<div id="sidebar">
-			<div class="sidebar-header">
-				<h2>TO DO</h2>
-				<button id="add-todo-btn" class="sidebar-btn">+</button>
+			<div>
+				<div class="sidebar-header">
+					<h2>TODO</h2>
+				</div>
+				<ul id="todo-categories">
+					<li id="all-todos">All</li>
+					<li id="today-todos">Today</li>
+					<li id="week-todos">This Week</li>
+				</ul>
 			</div>
-			<ul id="todo-categories">
-				<li id="all-todos">All</li>
-				<li id="today-todos">Today</li>
-				<li id="week-todos">This Week</li>
-			</ul>
-			<div class="sidebar-header">
-				<h2>Projects</h2>
-				<button id="add-project-btn" class="sidebar-btn">+</button>
-			</div>
-			<ul id="project-list" ></ul>
-			<div class="sidebar-header">
-				<h2>Notes</h2>
-				<button id="add-note-btn" class="sidebar-btn">+</button>
+			<div>
+				<div class="sidebar-header">
+					<h2>Projects</h2>
+					<button id="add-project-btn" class="sidebar-btn">+</button>
+				</div>
+				<ul id="project-list"></ul>
 			</div>
 		</div>
-		<div id="content"></div>
+		<div id="content">
+			<h2 id="todo-group" data-filter="all">All</h2>
+			<form id="add-todo-form">
+				<input type="text" id="todo-title">
+				<button>+</button>
+			</form>
+			<div class="todo-cards"></div>
+		</div>
 		<div id="footer">
 			<p>Made by <a href="https://github.com/xinweny">xinweny</a> in 2022</p>
 		</div>
