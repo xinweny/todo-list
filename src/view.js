@@ -250,12 +250,13 @@ const View = (() => {
 		_elements.projectTitleInput.addEventListener('blur', event => {
 			const title = _elements.projectTitleInput.value;
 
-			const id = handler(title);
+			if (title != '') {
+				const id = handler(title);
+			_getElement(`.project-card[data-id="${id}"]`).click();
+			}
 
 			_clearInput(_elements.projectTitleInput);
 			_elements.projectTitleInput.style.display = '';
-
-			_getElement(`.project-card[data-id="${id}"]`).click();
 		});
 
 		_elements.projectTitleInput.addEventListener('keydown', event => {
