@@ -1,6 +1,5 @@
 import { format } from 'date-fns';
 
-
 const View = (() => {
 	// Cached elements
 	const _elements = {
@@ -58,6 +57,10 @@ const View = (() => {
 
 		const titleText = _createElement('p', 'todo-title', todo.title);
 
+		const editTitleForm = _createElement('input', 'edit-todo-title');
+		editTitleForm.value = todo.title;
+		editTitleForm.style.display = 'none';
+
 		const formattedDate = (todo.dueDate) ? format(todo.dueDate, 'd LLL yy @ HH:mm') : '';
 		const dueDateText = _createElement('p', 'todo-duedate', formattedDate);
 
@@ -68,6 +71,7 @@ const View = (() => {
 		_appendChildren(todoCard, [
 			checkbox,
 			titleText,
+			editTitleForm,
 			dueDateText,
 			deleteBtn
 		]);
@@ -121,6 +125,19 @@ const View = (() => {
 		for (const e of removeElements) {
 			if (e != element && e.classList.contains(className)) e.classList.remove(className);
 		}
+	}
+
+	function _addKeyDownEventListener(element, keyCode) {
+		element.addEventListener('keydown', function(event) {
+			if (event.keyCode == keyCode) element.blur();
+		});
+	}
+
+	const _getTodoGroup = () => _elements.todoGroup.dataset;
+
+	const _toggleShowHide = (showElement, hideElement) => {
+		hideElement.style.display = 'none';
+		showElement.style.display = 'block';
 	}
 
 	// Render elements
@@ -177,11 +194,21 @@ const View = (() => {
 			const projectId = parseInt(_elements.todoGroup.dataset.projectId);
 
 			if (projectId) {
-				_elements.todoGroup.style.display = 'none';
-				_elements.editProjectInput.style.display = 'block';
+				_toggleShowHide(_elements.editProjectInput, _elements.todoGroup);
 				_elements.editProjectInput.value = _elements.todoGroup.textContent;
 				_elements.editProjectInput.focus();
 			}
+		});
+	}
+
+	function bindShowEditTodoForm(todo) {
+		const todoTitle = _getElement(`.todo-card[data-id="${todo.id}"] .todo-title`);
+
+		todoTitle.addEventListener('dblclick', event => {
+			const editTitleForm = _getElement(`.todo-card[data-id="${todo.id}"] .edit-todo-title`);
+
+			_toggleShowHide(editTitleForm, todoTitle);
+			editTitleForm.focus();
 		});
 	}
 	
@@ -193,8 +220,7 @@ const View = (() => {
 			const priority = _elements.todoPriorityInput.value;
 			const dueDate = _elements.todoDueDateInput.value;
 
-			const group = _elements.todoGroup.dataset;
-			handler(title, null, dueDate, priority, group);
+			handler(title, null, dueDate, priority, _getTodoGroup());
 
 			_clearInput(_elements.todoTitleInput);
 			_clearInput(_elements.todoDueDateInput);
@@ -208,9 +234,7 @@ const View = (() => {
 		deleteTodoBtn.addEventListener('click', event => {
 			event.stopPropagation();
 
-			const group = _elements.todoGroup.dataset;
-
-			handler(todo, group);
+			handler(todo, _getTodoGroup());
 		});
 	}
 
@@ -222,6 +246,23 @@ const View = (() => {
 			checkbox.checked = todo.complete;
 			checkbox.parentElement.classList.toggle('completed');
 		})
+	}
+
+	function bindEditTodoTitle(todo, handler) {
+		const id = todo.id;
+		const editTodoForm = _getElement(`.todo-card[data-id="${id}"] .edit-todo-title`);
+
+		editTodoForm.addEventListener('blur', event => {
+			const todoTitle = _getElement(`.todo-card[data-id="${id}"] .todo-title`);
+			const newTitle = editTodoForm.value;
+
+			handler(id, _getTodoGroup(), 'title', newTitle);
+
+			_toggleShowHide(todoTitle, editTodoForm);
+			todoTitle.textContent = newTitle;
+		});
+
+		_addKeyDownEventListener(editTodoForm, 13);
 	}
 
 	function bindToggleProjectForm() {
@@ -241,7 +282,8 @@ const View = (() => {
 					})
 					_elements.projectTitleInput.dispatchEvent(keyEvent);
 				}
-				_elements.projectTitleInput.style.display = '';
+				
+				_elements.projectTitleInput.style.display = 'none';
 			}
 		});
 	}
@@ -256,7 +298,7 @@ const View = (() => {
 			}
 
 			_clearInput(_elements.projectTitleInput);
-			_elements.projectTitleInput.style.display = '';
+			_elements.projectTitleInput.style.display = 'none';
 		});
 
 		_elements.projectTitleInput.addEventListener('keydown', event => {
@@ -271,14 +313,11 @@ const View = (() => {
 
 			handler(id, newTitle);
 
+			_toggleShowHide(_elements.todoGroup, _elements.editProjectInput);
 			_elements.todoGroup.textContent = newTitle;
-			_elements.todoGroup.style.display = 'block';
-			_elements.editProjectInput.style.display = '';
 		});
 
-		_elements.editProjectInput.addEventListener('keydown', event => {
-			if (event.keyCode == 13) _elements.editProjectInput.blur();
-		});
+		_addKeyDownEventListener(_elements.editProjectInput, 13);
 	}
 
 	function bindDeleteProject(project, handler) {
@@ -300,9 +339,11 @@ const View = (() => {
 		bindShowCategoryTodos,
 		bindShowProjectTodos,
 		bindShowEditProjectForm,
+		bindShowEditTodoForm,
 		bindAddTodo,
 		bindDeleteTodo,
 		bindToggleComplete,
+		bindEditTodoTitle,
 		bindAddProject,
 		bindEditProject,
 		bindDeleteProject

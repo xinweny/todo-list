@@ -1,6 +1,5 @@
 import Todo from './Todo.js';
 import Project from './Project.js';
-import Controller from './Controller.js';
 
 const Model = (() => {
 	let _todos = [];

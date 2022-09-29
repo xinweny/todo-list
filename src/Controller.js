@@ -22,6 +22,15 @@ const Controller = (() => {
 
 	const _filterThisWeek = date => isThisWeek(date);
 
+	const _determineTodosRender = group => {
+		if ('projectId' in group) {
+			const project = Model.getProject(group.projectId);
+			Model.getTodosOfProject(project);
+		} else {
+			Model.filterTodos(_filter[group.filter]);
+		}
+	}
+
 	// Handlers
 	const handleShowProjectTodos = project => { 
 		Model.getTodosOfProject(project);
@@ -32,30 +41,24 @@ const Controller = (() => {
 	}
 
 	const handleAddTodo = (title, description, dueDate, priority, group) => {
-			const date = (dueDate) ? new Date(dueDate) : null;
+		const date = (dueDate) ? new Date(dueDate) : null;
+		const project = ('projectId' in group) ? Model.getProject(group.projectId) : null;
 
-		if ('projectId' in group) {
-			const project = Model.getProject(group.projectId);
-			Model.createTodo(title, description, date, priority, project);
-			Model.getTodosOfProject(project);
-		} else {
-			Model.createTodo(title, description, date, priority);
-			Model.filterTodos(_filter[group.filter]);
-		}
+		Model.createTodo(title, description, date, priority, project);
+		_determineTodosRender(group);
 	}
 
 	const handleDeleteTodo = (todo, group) => {
 		Model.deleteTodo(todo);
-
-		if ('projectId' in group) {
-			const project = Model.getProject(todo.projectId);
-			Model.getTodosOfProject(project);
-		} else {
-			Model.filterTodos(_filter[group.filter]);
-		}
+		_determineTodosRender(group);
 	}
 
 	const handleToggleComplete = todo => todo.toggleComplete();
+
+	const handleEditTodo = (id, group, property, newTitle) => {
+		Model.editTodo(id, property, newTitle);
+		_determineTodosRender(group);
+	}
 
 	const handleAddProject = title => {
 		const model = Model.createProject(title);
@@ -72,7 +75,9 @@ const Controller = (() => {
 		View.displayTodos(todos);
 
 		for (const todo of todos) {
+			View.bindShowEditTodoForm(todo);
 			View.bindToggleComplete(todo, handleToggleComplete);
+			View.bindEditTodoTitle(todo, handleEditTodo);
 			View.bindDeleteTodo(todo, handleDeleteTodo);
 		}
 	}
