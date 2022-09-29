@@ -115,12 +115,6 @@ const Controller = (() => {
 			View.bindShowCategoryTodos(category, handleShowCategoryTodos.bind(null, f));
 		}
 
-		const a = Model.createProject('Shopping List');
-		Model.createProject('Study');
-
-		Model.createTodo('a', new Date(), 'low', a);
-		const b = Model.createTodo('e', new Date(), 'high');
-
 		Model.getTodos();
 		Model.getProjects();
 	})();

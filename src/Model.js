@@ -2,9 +2,43 @@ import Todo from './Todo.js';
 import Project from './Project.js';
 
 const Model = (() => {
-	let _todos = [];
-	let _projects = [];
+	let _todos =  _getDataFromLocalStorage('todos', []);
+	_todos = _todos.map(e => _setPrototype(e, Todo())).map(_formatTodo);
 
+	let _projects = _getDataFromLocalStorage('projects', []);
+	_projects = _projects.map(e => _setPrototype(e, Project()));
+
+	_setNextId(Todo(), _getDataFromLocalStorage('nextTodoId', 0));
+	_setNextId(Project(), _getDataFromLocalStorage('nextProjectId', 0));
+
+	function _getDataFromLocalStorage(label, dataToStore) {
+		let data = JSON.parse(localStorage.getItem(label));
+
+		if (!data) {
+			_saveDataToLocalStorage(label, dataToStore);
+			data = dataToStore;
+		};
+		return data;
+	}
+
+	function _saveDataToLocalStorage(label, dataToStore) {
+		localStorage.setItem(label, JSON.stringify(dataToStore));
+	}
+
+	function _setPrototype(obj, instance) {
+		Object.setPrototypeOf(obj, Object.getPrototypeOf(instance));
+		return obj;
+	}
+
+	function _formatTodo(todo) {
+		todo.dueDate = (todo.dueDate) ? new Date(todo.dueDate) : null;
+		return todo;
+	}
+
+	function _setNextId(obj, id) {
+		obj.setNextId(parseInt(id));
+	}
+	
 	function getTodos() {
 		this.onTodosChanged(_todos);
 
@@ -49,6 +83,9 @@ const Model = (() => {
 		_todos.push(todo);
 		if (project) _linkTodoAndProject(todo, project);
 
+		_saveDataToLocalStorage('todos', _todos);
+		_saveDataToLocalStorage('nextTodoId', todo.nextId);
+
 		return todo;
 	}
 
@@ -57,6 +94,10 @@ const Model = (() => {
 		_projects.push(project);
 
 		this.onProjectsChanged(_projects);
+
+		_saveDataToLocalStorage('projects', _projects);
+		_saveDataToLocalStorage('nextProjectId', project.nextId);
+
 		return project;
 	}
 
@@ -64,6 +105,8 @@ const Model = (() => {
 		const todo = getTodo(id);
 		
 		todo[property] = value;
+
+		_saveDataToLocalStorage('todos', _todos);
 	}
 
 	function editProject(id, title) {
@@ -72,6 +115,7 @@ const Model = (() => {
 		project.title = title;
 
 		this.onProjectsChanged(_projects);
+		_saveDataToLocalStorage('projects', _projects);
 	}
 
 	function deleteTodo(todo) {
@@ -82,6 +126,8 @@ const Model = (() => {
 			const project = getProject(todo.projectId);
 			project.deleteTodoId();
 		};
+
+		_saveDataToLocalStorage('todos', _todos);
 	}
 
 	function deleteProject(project) {
@@ -92,6 +138,7 @@ const Model = (() => {
 		_projects.splice(index, 1);
 
 		this.onProjectsChanged(_projects);
+		_saveDataToLocalStorage('projects', _projects);
 	}
 
 	function _linkTodoAndProject(todo, project) {

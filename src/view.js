@@ -66,7 +66,7 @@ const View = (() => {
 		const editDueDateForm = _createElement('input', 'edit-todo-duedate');
 		editDueDateForm.type = "date";
 		editDueDateForm.value = todo.dueDate;
-		editDueDateForm.style.display = 'none';
+		editDueDateForm.style.display = (todo.dueDate) ? 'none' : 'block';
 
 		const deleteBtn = _createElement('button', 'delete-todo-btn');
 		deleteBtn.textContent = 'x';
