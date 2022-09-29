@@ -10,9 +10,9 @@ const View = (() => {
 		addProjectBtn: _getElement('#add-project-btn'),
 		projectTitleInput: _getElement('#project-title'),
 		addTodoForm: _getElement('#add-todo-form'),
-		todoTitleInput: _getElement('#todo-title'),
-		todoPriorityInput: _getElement('#todo-priority'),
-		todoDueDateInput: _getElement('#todo-duedate'),
+		todoTitleInput: _getElement('#add-todo-title'),
+		todoPriorityInput: _getElement('#add-todo-priority'),
+		todoDueDateInput: _getElement('#add-todo-duedate'),
 		editProjectInput: _getElement('#edit-project-title')
 	};
 
@@ -60,11 +60,11 @@ const View = (() => {
 		editTitleForm.value = todo.title;
 		editTitleForm.style.display = 'none';
 
-		const formattedDate = (todo.dueDate) ? format(todo.dueDate, 'd LLL yy @ HH:mm') : '';
+		const formattedDate = (todo.dueDate) ? format(todo.dueDate, "d LLL") : '';
 		const dueDateText = _createElement('p', 'todo-duedate', formattedDate);
 
 		const editDueDateForm = _createElement('input', 'edit-todo-duedate');
-		editDueDateForm.type = "datetime-local";
+		editDueDateForm.type = "date";
 		editDueDateForm.value = todo.dueDate;
 		editDueDateForm.style.display = 'none';
 
@@ -208,7 +208,7 @@ const View = (() => {
 	}
 
 	function bindShowEditProjectForm() {
-		_elements.todoGroup.addEventListener('dblclick', event => {
+		_elements.todoGroup.addEventListener('click', event => {
 			const projectId = parseInt(_elements.todoGroup.dataset.projectId);
 
 			if (projectId) {
@@ -222,7 +222,7 @@ const View = (() => {
 	function bindShowEditTodoTitleForm(todo) {
 		const todoTitle = _getTodoCardChild(todo.id, 'todo-title');
 
-		todoTitle.addEventListener('dblclick', event => {
+		todoTitle.addEventListener('click', event => {
 			const editTitleForm = _getTodoCardChild(todo.id, 'edit-todo-title');
 
 			_toggleShowHide(editTitleForm, todoTitle);
@@ -233,7 +233,7 @@ const View = (() => {
 	function bindShowEditTodoDueDateForm(todo) {
 		const todoDueDate = _getTodoCardChild(todo.id, 'todo-duedate');
 
-		todoDueDate.addEventListener('dblclick', event => {
+		todoDueDate.addEventListener('click', event => {
 			const editDueDateForm = _getTodoCardChild(todo.id, 'edit-todo-duedate');
 
 			editDueDateForm.showPicker();
@@ -248,7 +248,7 @@ const View = (() => {
 			const priority = _elements.todoPriorityInput.value;
 			const dueDate = _elements.todoDueDateInput.value;
 
-			handler(title, null, dueDate, priority, _getTodoGroup());
+			handler(title, dueDate, priority, _getTodoGroup());
 
 			_clearInput(_elements.todoTitleInput);
 			_clearInput(_elements.todoDueDateInput);

@@ -43,8 +43,8 @@ const Model = (() => {
 		return todos;
 	}
 
-	function createTodo(title, description, dueDate, priority, project) {
-		const todo = Todo(title, description, dueDate, priority);
+	function createTodo(title, dueDate, priority, project) {
+		const todo = Todo(title, dueDate, priority);
 
 		_todos.push(todo);
 		if (project) _linkTodoAndProject(todo, project);

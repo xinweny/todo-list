@@ -40,11 +40,11 @@ const Controller = (() => {
 		Model.filterTodos(filter);
 	}
 
-	const handleAddTodo = (title, description, dueDate, priority, group) => {
+	const handleAddTodo = (title, dueDate, priority, group) => {
 		const date = (dueDate) ? new Date(dueDate) : null;
 		const project = ('projectId' in group) ? Model.getProject(group.projectId) : null;
 
-		Model.createTodo(title, description, date, priority, project);
+		Model.createTodo(title, date, priority, project);
 		_determineTodosRender(group);
 	}
 
@@ -56,7 +56,7 @@ const Controller = (() => {
 	const handleToggleComplete = todo => todo.toggleComplete();
 
 	const handleEditTodo = (id, group, property, value) => {
-		const newValue = value;
+		let newValue = value;
 
 		if (property == 'dueDate') newValue = new Date(value);
 
@@ -118,8 +118,8 @@ const Controller = (() => {
 		const a = Model.createProject('Shopping List');
 		Model.createProject('Study');
 
-		Model.createTodo('a', 'b', new Date(), 'low', a);
-		const b = Model.createTodo('e', 'f', new Date(), 'high');
+		Model.createTodo('a', new Date(), 'low', a);
+		const b = Model.createTodo('e', new Date(), 'high');
 
 		Model.getTodos();
 		Model.getProjects();

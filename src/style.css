@@ -50,11 +50,15 @@ li {
 	background-color: aqua;
 }
 
-.clicked .delete-project-btn, .sidebar-btn:hover .delete-project-btn {
+.clicked .delete-project-btn, .sidebar-btn:hover .delete-project-btn, .todo-card:hover .delete-todo-btn {
 	display: block;
 }
 
-.delete-project-btn {
+.delete-project-btn, .delete-todo-btn {
+	display: none;
+}
+
+#add-todo-description {
 	display: none;
 }
 
@@ -67,21 +71,21 @@ li {
 	display: none;
 }
 
-input[type="datetime-local"]::-webkit-datetime-edit {
+input[type="date"]::-webkit-datetime-edit {
 	display: none;
 }
-
 
 .todo-card {
 	width: 500px;
 	display: flex;
-	align-items: stretch;
+	align-items: center;
 	justify-content: space-around;
 	border-left: 6px solid black;
+	padding: 8px;
 }
 
 .todo-priority {
-
+	appearance: none;
 }
 
 .delete-todo-btn {

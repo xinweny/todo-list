@@ -10,12 +10,11 @@ const todoProto = Object.assign({
 	}
 }, idMixin);
 
-export default function Todo(title, description, dueDate, priority) {
+export default function Todo(title, dueDate, priority) {
 	let obj = Object.create(todoProto);
 	
 	obj.setId();
 	obj.title = title;
-	obj.description = description;
 	obj.dueDate = dueDate;
 	obj.priority = priority;
 	obj.complete = false;

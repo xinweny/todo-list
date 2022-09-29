@@ -13,9 +13,6 @@
 		</div>
 		<div id="sidebar">
 			<div>
-				<div class="sidebar-header">
-					<h2>TODO</h2>
-				</div>
 				<div id="todo-categories">
 					<div id="all-todos" class="sidebar-btn clicked">All</div>
 					<div id="today-todos" class="sidebar-btn">Today</div>
@@ -37,16 +34,18 @@
 				<input type="text" id="edit-project-title">
 			</div>
 			<form id="add-todo-form">
-				<input type="text" id="todo-title" placeholder="Add your TODO" required>
-				<select name="priority" id="todo-priority">
+				<input type="text" id="add-todo-title" placeholder="Add new TODO" required>
+				<select name="priority" id="add-todo-priority">
 					<option value="none" disabled selected hidden>Priority</option>
+					<option value="none">None</option>
 					<option value="low">Low</option>
 					<option value="medium">Medium</option>
 					<option value="high">High</option>
 				</select>
-				<input type="datetime-local" id="todo-duedate">
+				<input type="date" id="add-todo-duedate">
 				<button>+</button>
 			</form>
+			<textarea name="description" id="add-todo-description" rows="2" placeholder="Look into buying dishwasher"></textarea>
 			<div class="todo-cards"></div>
 		</div>
 		<div id="footer">
