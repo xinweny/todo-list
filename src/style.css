@@ -68,7 +68,7 @@ li {
 }
 
 input[type="datetime-local"]::-webkit-datetime-edit {
-	display:none;
+	display: none;
 }
 
 

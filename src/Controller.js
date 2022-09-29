@@ -55,8 +55,10 @@ const Controller = (() => {
 
 	const handleToggleComplete = todo => todo.toggleComplete();
 
-	const handleEditTodo = (id, group, property, newTitle) => {
-		Model.editTodo(id, property, newTitle);
+	const handleEditTodo = (id, group, property, value) => {
+		const newValue = (property == 'dueDate') ? new Date(value) : value;
+
+		Model.editTodo(id, property, newValue);
 		_determineTodosRender(group);
 	}
 
@@ -75,9 +77,11 @@ const Controller = (() => {
 		View.displayTodos(todos);
 
 		for (const todo of todos) {
-			View.bindShowEditTodoForm(todo);
+			View.bindShowEditTodoTitleForm(todo);
+			View.bindShowEditTodoDueDateForm(todo);
 			View.bindToggleComplete(todo, handleToggleComplete);
-			View.bindEditTodoTitle(todo, handleEditTodo);
+			View.bindEditTodoTitle(todo.id, handleEditTodo);
+			View.bindEditTodoDueDate(todo.id, handleEditTodo);
 			View.bindDeleteTodo(todo, handleDeleteTodo);
 		}
 	}

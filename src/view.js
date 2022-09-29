@@ -44,8 +44,7 @@ const View = (() => {
 		let todoCard = _createElement('div', 'todo-card');
 		todoCard.dataset.id = todo.id;
 
-		const checkbox = _createElement('input');
-		checkbox.dataset.id = todo.id;
+		const checkbox = _createElement('input', 'todo-checkbox');
 		checkbox.type = 'checkbox';
 		checkbox.checked = todo.complete;
 
@@ -64,8 +63,12 @@ const View = (() => {
 		const formattedDate = (todo.dueDate) ? format(todo.dueDate, 'd LLL yy @ HH:mm') : '';
 		const dueDateText = _createElement('p', 'todo-duedate', formattedDate);
 
+		const editDueDateForm = _createElement('input', 'edit-todo-duedate');
+		editDueDateForm.type = "datetime-local";
+		editDueDateForm.value = todo.dueDate;
+		editDueDateForm.style.display = 'none';
+
 		const deleteBtn = _createElement('button', 'delete-todo-btn');
-		deleteBtn.dataset.id = todo.id;
 		deleteBtn.textContent = 'x';
 
 		_appendChildren(todoCard, [
@@ -73,6 +76,7 @@ const View = (() => {
 			titleText,
 			editTitleForm,
 			dueDateText,
+			editDueDateForm,
 			deleteBtn
 		]);
 
@@ -140,6 +144,8 @@ const View = (() => {
 		showElement.style.display = 'block';
 	}
 
+	const _getTodoCardChild = (id, cls) => _getElement(`.todo-card[data-id="${id}"] .${cls}`);
+
 	// Render elements
 	function displayTodos(todos) {
 		_clearElement(_elements.todoCards);
@@ -201,14 +207,24 @@ const View = (() => {
 		});
 	}
 
-	function bindShowEditTodoForm(todo) {
-		const todoTitle = _getElement(`.todo-card[data-id="${todo.id}"] .todo-title`);
+	function bindShowEditTodoTitleForm(todo) {
+		const todoTitle = _getTodoCardChild(todo.id, 'todo-title');
 
 		todoTitle.addEventListener('dblclick', event => {
-			const editTitleForm = _getElement(`.todo-card[data-id="${todo.id}"] .edit-todo-title`);
+			const editTitleForm = _getTodoCardChild(todo.id, 'edit-todo-title');
 
 			_toggleShowHide(editTitleForm, todoTitle);
 			editTitleForm.focus();
+		});
+	}
+
+	function bindShowEditTodoDueDateForm(todo) {
+		const todoDueDate = _getTodoCardChild(todo.id, 'todo-duedate');
+
+		todoDueDate.addEventListener('dblclick', event => {
+			const editDueDateForm = _getTodoCardChild(todo.id, 'edit-todo-duedate');
+
+			editDueDateForm.showPicker();
 		});
 	}
 	
@@ -229,7 +245,7 @@ const View = (() => {
 	}
 
 	function bindDeleteTodo(todo, handler) {
-		const deleteTodoBtn = _getElement(`.delete-todo-btn[data-id="${todo.id}"]`);
+		const deleteTodoBtn = _getTodoCardChild(todo.id, 'delete-todo-btn');
 
 		deleteTodoBtn.addEventListener('click', event => {
 			event.stopPropagation();
@@ -239,7 +255,7 @@ const View = (() => {
 	}
 
 	function bindToggleComplete(todo, handler) {
-		const checkbox = _getElement(`input[data-id="${todo.id}"]`);
+		const checkbox = _getTodoCardChild(todo.id, 'todo-checkbox');
 		checkbox.addEventListener('click', event => {
 			handler(todo);
 
@@ -248,12 +264,11 @@ const View = (() => {
 		})
 	}
 
-	function bindEditTodoTitle(todo, handler) {
-		const id = todo.id;
-		const editTodoForm = _getElement(`.todo-card[data-id="${id}"] .edit-todo-title`);
+	function bindEditTodoTitle(id, handler) {
+		const editTodoForm = _getTodoCardChild(id, 'edit-todo-title');
 
 		editTodoForm.addEventListener('blur', event => {
-			const todoTitle = _getElement(`.todo-card[data-id="${id}"] .todo-title`);
+			const todoTitle = _getTodoCardChild(id, 'todo-title');
 			const newTitle = editTodoForm.value;
 
 			handler(id, _getTodoGroup(), 'title', newTitle);
@@ -263,6 +278,18 @@ const View = (() => {
 		});
 
 		_addKeyDownEventListener(editTodoForm, 13);
+	}
+
+	function bindEditTodoDueDate(id, handler) {
+		const editDueDateForm = _getTodoCardChild(id, 'edit-todo-duedate');
+
+		editDueDateForm.addEventListener('change', event => {
+			const todoDueDate = _getTodoCardChild(id, 'todo-duedate');
+			const newDueDate = editDueDateForm.value;
+
+			handler(id, _getTodoGroup(), 'dueDate', newDueDate);
+			todoDueDate.textContent = newDueDate;
+		});
 	}
 
 	function bindToggleProjectForm() {
@@ -339,11 +366,13 @@ const View = (() => {
 		bindShowCategoryTodos,
 		bindShowProjectTodos,
 		bindShowEditProjectForm,
-		bindShowEditTodoForm,
+		bindShowEditTodoTitleForm,
+		bindShowEditTodoDueDateForm,
 		bindAddTodo,
 		bindDeleteTodo,
 		bindToggleComplete,
 		bindEditTodoTitle,
+		bindEditTodoDueDate,
 		bindAddProject,
 		bindEditProject,
 		bindDeleteProject
