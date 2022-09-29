@@ -56,7 +56,9 @@ const Controller = (() => {
 	const handleToggleComplete = todo => todo.toggleComplete();
 
 	const handleEditTodo = (id, group, property, value) => {
-		const newValue = (property == 'dueDate') ? new Date(value) : value;
+		const newValue = value;
+
+		if (property == 'dueDate') newValue = new Date(value);
 
 		Model.editTodo(id, property, newValue);
 		_determineTodosRender(group);
@@ -82,6 +84,7 @@ const Controller = (() => {
 			View.bindToggleComplete(todo, handleToggleComplete);
 			View.bindEditTodoTitle(todo.id, handleEditTodo);
 			View.bindEditTodoDueDate(todo.id, handleEditTodo);
+			View.bindEditTodoPriority(todo.id, handleEditTodo);
 			View.bindDeleteTodo(todo, handleDeleteTodo);
 		}
 	}

@@ -71,25 +71,37 @@ const View = (() => {
 		const deleteBtn = _createElement('button', 'delete-todo-btn');
 		deleteBtn.textContent = 'x';
 
+		const todoPriority = _createElement('select', 'todo-priority');
+		for (const priority of ['none', 'low', 'medium', 'high']) {
+			const option = _createElement('option');
+			option.value = priority;
+			option.textContent = priority.charAt(0).toUpperCase() + priority.slice(1);
+			todoPriority.appendChild(option);
+		}
+
+		switch (todo.priority) {
+			case 'low':
+				todoPriority.value = 'low';
+				todoCard.style.borderLeftColor = 'green'; break;
+			case 'medium':
+				todoPriority.value = 'medium';
+				todoCard.style.borderLeftColor = 'orange'; break;
+			case 'high':
+				todoPriority.value = 'high';
+				todoCard.style.borderLeftColor = 'red'; break;
+			default:
+				break;
+		}
+
 		_appendChildren(todoCard, [
 			checkbox,
 			titleText,
 			editTitleForm,
 			dueDateText,
 			editDueDateForm,
+			todoPriority,
 			deleteBtn
 		]);
-
-		switch (todo.priority) {
-			case 'low':
-				todoCard.style.borderLeftColor = 'green'; break;
-			case 'medium':
-				todoCard.style.borderLeftColor = 'orange'; break;
-			case 'high':
-				todoCard.style.borderLeftColor = 'red'; break;
-			default:
-				break;
-		}
 
 		return todoCard
 	}
@@ -292,6 +304,16 @@ const View = (() => {
 		});
 	}
 
+	function bindEditTodoPriority(id, handler) {
+		const editPriorityForm = _getTodoCardChild(id, 'todo-priority');
+
+		editPriorityForm.addEventListener('change', event => {
+			const newPriority = editPriorityForm.value;
+
+			handler(id, _getTodoGroup(), 'priority', newPriority);
+		})
+	}
+
 	function bindToggleProjectForm() {
 		_elements.addProjectBtn.addEventListener('click', event => {
 			const display = _elements.projectTitleInput.style.display;
@@ -373,6 +395,7 @@ const View = (() => {
 		bindToggleComplete,
 		bindEditTodoTitle,
 		bindEditTodoDueDate,
+		bindEditTodoPriority,
 		bindAddProject,
 		bindEditProject,
 		bindDeleteProject
