@@ -29,9 +29,24 @@ const Controller = (() => {
 		}
 	}
 
+	const handleDeleteTodo = (todo, group) => {
+		Model.deleteTodo(todo);
+
+		if ('projectId' in group) {
+			const project = Model.getProject(todo.projectId);
+			Model.getTodosOfProject(project);
+		} else {
+			Model.filterTodos(_filter[group.filter]);
+		}
+	}
+
 	const handleToggleComplete = todo => todo.toggleComplete();
 
-	const handleAddProject = title => Model.createProject(title);
+	const handleAddProject = title => {
+		const model = Model.createProject(title);
+
+		return model.id;
+	}
 
 	const handleEditProject = (id, title) => Model.editProject(id, title);
 
@@ -43,6 +58,7 @@ const Controller = (() => {
 
 		for (const todo of todos) {
 			View.bindToggleComplete(todo, handleToggleComplete);
+			View.bindDeleteTodo(todo, handleDeleteTodo);
 		}
 	}
 

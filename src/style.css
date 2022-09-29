@@ -73,9 +73,12 @@ input[type="datetime-local"]::-webkit-datetime-edit {
 
 
 .todo-card {
+	width: 500px;
 	display: flex;
 	align-items: center;
+	justify-content: space-around;
 	border-left: 6px solid black;
+	padding: 8px;
 }
 
 .completed p {

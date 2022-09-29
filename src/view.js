@@ -32,6 +32,12 @@ const View = (() => {
 
 	const _appendChild = (parent, child) => _elements[parent].appendChild(child);
 
+	const _appendChildren = (element, children) => {
+		for (const child of children) {
+			element.appendChild(child);
+		}
+	}
+
 	function _createTodoCard(todo) {
 		let todoCard = _createElement('div', 'todo-card');
 		todoCard.dataset.id = todo.id;
@@ -47,10 +53,20 @@ const View = (() => {
 			todoCard.classList.remove('completed');
 		}
 
-		const titleText = _createElement('p', '', todo.title);
+		const titleText = _createElement('p', 'todo-title', todo.title);
 
-		todoCard.appendChild(checkbox);
-		todoCard.appendChild(titleText);
+		const dueDateText = _createElement('p', 'todo-duedate', todo.dueDate);
+
+		const deleteBtn = _createElement('button', 'delete-todo-btn');
+		deleteBtn.dataset.id = todo.id;
+		deleteBtn.textContent = 'x';
+
+		_appendChildren(todoCard, [
+			checkbox,
+			titleText,
+			dueDateText,
+			deleteBtn
+		]);
 
 		switch (todo.priority) {
 			case 'low':
@@ -67,22 +83,24 @@ const View = (() => {
 	}
 
 	function _createProjectCard(project) {
-		const div = _createElement('div', 'project-card');
-		div.classList.add('sidebar-btn');
+		const projectCard = _createElement('div', 'project-card');
+		projectCard.classList.add('sidebar-btn');
 
-		div.dataset.id = project.id;
+		projectCard.dataset.id = project.id;
 
-		const title = _createElement('p')
-		title.textContent = project.title;
+		const titleText = _createElement('p')
+		titleText.textContent = project.title;
 
 		const deleteBtn = _createElement('button', 'delete-project-btn');
 		deleteBtn.dataset.id = project.id;
 		deleteBtn.textContent = 'x';
 
-		div.appendChild(title);
-		div.appendChild(deleteBtn);
+		_appendChildren(projectCard, [
+			titleText,
+			deleteBtn
+		]);
 
-		return div;
+		return projectCard;
 	}
 
 	function _clearElement(element) {
@@ -179,6 +197,18 @@ const View = (() => {
 		});
 	}
 
+	function bindDeleteTodo(todo, handler) {
+		const deleteTodoBtn = _getElement(`.delete-todo-btn[data-id="${todo.id}"]`);
+
+		deleteTodoBtn.addEventListener('click', event => {
+			event.stopPropagation();
+
+			const group = _elements.todoGroup.dataset;
+
+			handler(todo, group);
+		});
+	}
+
 	function bindToggleComplete(todo, handler) {
 		const checkbox = _getElement(`input[data-id="${todo.id}"]`);
 		checkbox.addEventListener('click', event => {
@@ -215,10 +245,12 @@ const View = (() => {
 		_elements.projectTitleInput.addEventListener('blur', event => {
 			const title = _elements.projectTitleInput.value;
 
-			handler(title);
+			const id = handler(title);
 
 			_clearText(_elements.projectTitleInput);
 			_elements.projectTitleInput.style.display = '';
+
+			_getElement(`.project-card[data-id="${id}"]`).click();
 		});
 
 		_elements.projectTitleInput.addEventListener('keydown', event => {
@@ -263,6 +295,7 @@ const View = (() => {
 		bindShowProjectTodos,
 		bindShowEditProjectForm,
 		bindAddTodo,
+		bindDeleteTodo,
 		bindToggleComplete,
 		bindAddProject,
 		bindEditProject,

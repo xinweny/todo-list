@@ -61,17 +61,16 @@ const Model = (() => {
 		return project;
 	}
 
-	function editTodo(id, title, description, dueDate, priority) {
+	function editTodo(id, property, value) {
 		const todo = getTodo(id);
-		if (title) todo.title = title;
-		if (description) todo.title = description;
-		if (dueDate) todo.title = dueDate;
-		if (priority) todo.title = priority;
+		
+		todo[property] = value;
 	}
 
 	function editProject(id, title) {
 		const project = getProject(id);
-		if (title) project.title = title;
+		
+		project.title = title;
 
 		this.onProjectsChanged(_projects);
 	}
