@@ -1,9 +1,10 @@
 const View = (() => {
 	// Cached elements
 	const _elements = {
+		allTodosBtn: _getElement('#all-todos'),
 		todoGroup: _getElement('#todo-group'),
 		todoCards: _getElement('.todo-cards'),
-		projectList: _getElement('#project-list'),
+		projectCards: _getElement('#project-cards'),
 		addProjectBtn: _getElement('#add-project-btn'),
 		projectTitleInput: _getElement('#project-title'),
 		addTodoForm: _getElement('#add-todo-form'),
@@ -27,9 +28,9 @@ const View = (() => {
 		return document.querySelector(selector);
 	}
 
-	function _appendChild(parent, child) {
-		return _elements[parent].appendChild(child);
-	}
+	const _getElements = selector => document.querySelectorAll(selector);
+
+	const _appendChild = (parent, child) => _elements[parent].appendChild(child);
 
 	function _createTodoCard(todo) {
 		let todoCard = _createElement('div', 'todo-card');
@@ -65,12 +66,39 @@ const View = (() => {
 		return todoCard
 	}
 
+	function _createProjectCard(project) {
+		const div = _createElement('div', 'project-card');
+		div.classList.add('sidebar-btn');
+
+		div.dataset.id = project.id;
+
+		const title = _createElement('p')
+		title.textContent = project.title;
+
+		const deleteBtn = _createElement('button', 'delete-project-btn');
+		deleteBtn.dataset.id = project.id;
+		deleteBtn.textContent = 'x';
+
+		div.appendChild(title);
+		div.appendChild(deleteBtn);
+
+		return div;
+	}
+
 	function _clearElement(element) {
 		element.innerHTML = null;
 	}
 
 	function _clearText(element) {
 		element.value = '';
+	}
+
+	function _addClassToFocused(className, element, removeElements) {
+		element.classList.add(className);
+
+		for (const e of removeElements) {
+			if (e != element && e.classList.contains(className)) e.classList.remove(className);
+		}
 	}
 
 	// Render elements
@@ -85,39 +113,41 @@ const View = (() => {
 	}
 
 	function displayProjects(projects) {
-		_clearElement(_elements.projectList);
+		_clearElement(_elements.projectCards);
 
 		for (let i = projects.length - 1; i >= 0; i--) {
-			let li = _createElement('li', 'project-btn');
-			li.dataset.id = projects[i].id;
-			li.textContent = projects[i].title;
+			const projectCard = _createProjectCard(projects[i]);
 
-			_appendChild('projectList', li);
+			_appendChild('projectCards', projectCard);
 		}
 	}
 
 	// Binders for controller handlers to event listeners
 	function bindShowCategoryTodos(category, handler) {
-		const categoryLi = _getElement(`#${category}-todos`);
+		const categoryDiv = _getElement(`#${category}-todos`);
 
-		categoryLi.addEventListener('click', event => {
-			const todos = handler(category);
+		categoryDiv.addEventListener('click', event => {
+			handler(category);
 
 			_elements.todoGroup.innerText = event.target.textContent;
 			_elements.todoGroup.removeAttribute('data-project-id');
 			_elements.todoGroup.dataset.filter = category;
+
+			_addClassToFocused('clicked', categoryDiv, _getElements('.sidebar-btn'));
 		});
 	}
 
 	function bindShowProjectTodos(project, handler) {
-		const projectLi = _getElement(`li[data-id="${project.id}"]`);
+		const projectCard = _getElement(`div[data-id="${project.id}"]`);
 
-		projectLi.addEventListener('click', event => {
-			const todos = handler(project);
+		projectCard.addEventListener('click', event => {
+			handler(project);
 
 			_elements.todoGroup.innerText = project.title;
 			_elements.todoGroup.removeAttribute('data-filter');
 			_elements.todoGroup.dataset.projectId = project.id;
+
+			_addClassToFocused('clicked', projectCard, _getElements('.sidebar-btn'));
 		});
 	}
 
@@ -213,7 +243,17 @@ const View = (() => {
 		});
 	}
 
-	
+	function bindDeleteProject(project, handler) {
+		const deleteProjectBtn = _getElement(`.delete-project-btn[data-id="${project.id}"]`);
+
+		deleteProjectBtn.addEventListener('click', event => {
+			event.stopPropagation();
+
+			handler(project);
+
+			_elements.allTodosBtn.click();
+		});
+	}
 	
 	return {
 		displayTodos,
@@ -225,7 +265,8 @@ const View = (() => {
 		bindAddTodo,
 		bindToggleComplete,
 		bindAddProject,
-		bindEditProject
+		bindEditProject,
+		bindDeleteProject
 	};
 })();
 

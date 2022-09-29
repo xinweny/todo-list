@@ -30,6 +30,12 @@ li {
 	padding: 16px;
 }
 
+.project-card {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
 #project-title {
 	display: none;
 }
@@ -38,6 +44,18 @@ li {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+}
+
+.clicked {
+	background-color: aqua;
+}
+
+.clicked .delete-project-btn, .sidebar-btn:hover .delete-project-btn {
+	display: block;
+}
+
+.delete-project-btn {
+	display: none;
 }
 
 #content {

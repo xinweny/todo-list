@@ -16,19 +16,19 @@
 				<div class="sidebar-header">
 					<h2>TODO</h2>
 				</div>
-				<ul id="todo-categories">
-					<li id="all-todos">All</li>
-					<li id="today-todos">Today</li>
-					<li id="week-todos">This Week</li>
-				</ul>
+				<div id="todo-categories">
+					<div id="all-todos" class="sidebar-btn clicked">All</div>
+					<div id="today-todos" class="sidebar-btn">Today</div>
+					<div id="week-todos" class="sidebar-btn">This Week</div>
+				</div>
 			</div>
 			<div>
 				<div class="sidebar-header">
 					<h2>Projects</h2>
-					<button id="add-project-btn" class="sidebar-btn">+</button>
+					<button id="add-project-btn">+</button>
 				</div>
 				<input type="text" id="project-title" placeholder="New project">
-				<ul id="project-list"></ul>
+				<div id="project-cards"></div>
 			</div>
 		</div>
 		<div id="content">

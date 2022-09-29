@@ -92,6 +92,8 @@ const Model = (() => {
 
 		const index = _projects.indexOf(project);
 		_projects.splice(index, 1);
+
+		this.onProjectsChanged(_projects);
 	}
 
 	function _linkTodoAndProject(todo, project) {

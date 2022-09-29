@@ -35,6 +35,8 @@ const Controller = (() => {
 
 	const handleEditProject = (id, title) => Model.editProject(id, title);
 
+	const handleDeleteProject = project => Model.deleteProject(project);
+
 	// Callback for model when change is detected to bind handlers to event listener binders of View
 	function onTodosChanged(todos) {
 		View.displayTodos(todos);
@@ -49,6 +51,7 @@ const Controller = (() => {
 
 		for (const project of projects) {
 			View.bindShowProjectTodos(project, handleShowProjectTodos);
+			View.bindDeleteProject(project, handleDeleteProject);
 		}
 	}
 
@@ -81,8 +84,7 @@ const Controller = (() => {
 
 	return {
 		onTodosChanged,
-		onProjectsChanged,
-		handleEditProject
+		onProjectsChanged
 	};
 })();
 
