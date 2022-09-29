@@ -1,13 +1,26 @@
-import { weeksToDays } from 'date-fns';
 import Model from './Model.js';
 import View from './View.js';
+import { isThisWeek } from 'date-fns';
 
 const Controller = (() => {
 	const _filter = {
 		all: todo => todo,
-		today: todo => todo,
-		week: todo => todo
+		today: todo => _filterToday(todo.dueDate),
+		week: todo => _filterThisWeek(todo.dueDate)
 	}
+
+	// Date filters
+	function _filterToday(date) {
+		const today = new Date();
+
+		return (
+			date.getDate() == today.getDate() &&
+			date.getMonth() == today.getMonth() &&
+			date.getYear() == today.getYear()
+			);
+	}
+
+	const _filterThisWeek = date => isThisWeek(date);
 
 	// Handlers
 	const handleShowProjectTodos = project => { 
@@ -19,12 +32,14 @@ const Controller = (() => {
 	}
 
 	const handleAddTodo = (title, description, dueDate, priority, group) => {
+			const date = (dueDate) ? new Date(dueDate) : null;
+
 		if ('projectId' in group) {
 			const project = Model.getProject(group.projectId);
-			Model.createTodo(title, description, dueDate, priority, project);
+			Model.createTodo(title, description, date, priority, project);
 			Model.getTodosOfProject(project);
 		} else {
-			Model.createTodo(title, description, dueDate, priority);
+			Model.createTodo(title, description, date, priority);
 			Model.filterTodos(_filter[group.filter]);
 		}
 	}
@@ -91,8 +106,8 @@ const Controller = (() => {
 		const a = Model.createProject('Shopping List');
 		Model.createProject('Study');
 
-		Model.createTodo('a', 'b', 'c', 'low', a);
-		const b = Model.createTodo('e', 'f', 'g', 'high');
+		Model.createTodo('a', 'b', new Date(), 'low', a);
+		const b = Model.createTodo('e', 'f', new Date(), 'high');
 
 		Model.getTodos();
 		Model.getProjects();

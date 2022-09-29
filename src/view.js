@@ -1,3 +1,6 @@
+import { format } from 'date-fns';
+
+
 const View = (() => {
 	// Cached elements
 	const _elements = {
@@ -55,7 +58,8 @@ const View = (() => {
 
 		const titleText = _createElement('p', 'todo-title', todo.title);
 
-		const dueDateText = _createElement('p', 'todo-duedate', todo.dueDate);
+		const formattedDate = (todo.dueDate) ? format(todo.dueDate, 'd LLL yy @ HH:mm') : '';
+		const dueDateText = _createElement('p', 'todo-duedate', formattedDate);
 
 		const deleteBtn = _createElement('button', 'delete-todo-btn');
 		deleteBtn.dataset.id = todo.id;
@@ -107,7 +111,7 @@ const View = (() => {
 		element.innerHTML = null;
 	}
 
-	function _clearText(element) {
+	function _clearInput(element) {
 		element.value = '';
 	}
 
@@ -122,7 +126,6 @@ const View = (() => {
 	// Render elements
 	function displayTodos(todos) {
 		_clearElement(_elements.todoCards);
-		_clearText(_elements.todoTitleInput);
 
 		for (const todo of todos) {
 			const todoCard = _createTodoCard(todo);
@@ -190,10 +193,12 @@ const View = (() => {
 			const priority = _elements.todoPriorityInput.value;
 			const dueDate = _elements.todoDueDateInput.value;
 
-			if (title != '') {
-				const group = _elements.todoGroup.dataset;
-				handler(title, null, dueDate, priority, group);
-			}
+			const group = _elements.todoGroup.dataset;
+			handler(title, null, dueDate, priority, group);
+
+			_clearInput(_elements.todoTitleInput);
+			_clearInput(_elements.todoDueDateInput);
+			_elements.todoPriorityInput.selectedIndex = 0;
 		});
 	}
 
@@ -247,7 +252,7 @@ const View = (() => {
 
 			const id = handler(title);
 
-			_clearText(_elements.projectTitleInput);
+			_clearInput(_elements.projectTitleInput);
 			_elements.projectTitleInput.style.display = '';
 
 			_getElement(`.project-card[data-id="${id}"]`).click();

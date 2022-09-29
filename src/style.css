@@ -81,7 +81,7 @@ input[type="datetime-local"]::-webkit-datetime-edit {
 	padding: 8px;
 }
 
-.completed p {
+.completed p:first-of-type {
 	text-decoration: line-through;
 }
 
