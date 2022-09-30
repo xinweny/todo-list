@@ -13,11 +13,15 @@ const Controller = (() => {
 	function _filterToday(date) {
 		const today = new Date();
 
-		return (
-			date.getDate() == today.getDate() &&
-			date.getMonth() == today.getMonth() &&
-			date.getYear() == today.getYear()
-			);
+		if (date) {
+			return (
+				date.getDate() == today.getDate() &&
+				date.getMonth() == today.getMonth() &&
+				date.getYear() == today.getYear()
+				);
+		} else {
+			return false;
+		}
 	}
 
 	const _filterThisWeek = date => isThisWeek(date);

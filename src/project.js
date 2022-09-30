@@ -1,6 +1,7 @@
 import { idMixin } from './mixins.js';
 
 const projectProto = Object.assign({
+	nextId: 0,
 	getTodoIds: function() {
 		return this._todoIds;
 	},

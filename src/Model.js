@@ -2,14 +2,40 @@ import Todo from './Todo.js';
 import Project from './Project.js';
 
 const Model = (() => {
-	let _todos =  _getDataFromLocalStorage('todos', []);
-	_todos = _todos.map(e => _setPrototype(e, Todo())).map(_formatTodo);
+	// Initial data
+	const _initProjects = [
+		Project('Chores'),
+		Project('Grocery list')
+	];
 
-	let _projects = _getDataFromLocalStorage('projects', []);
-	_projects = _projects.map(e => _setPrototype(e, Project()));
+	const _initTodos = [
+		_linkTodoAndProject(
+			Todo('Wash dishes', new Date(), 'low'),
+			_initProjects[0]
+		),
+		_linkTodoAndProject(
+			Todo('Feed cats', new Date(), 'medium'),
+			_initProjects[0]
+		),
+		_linkTodoAndProject(
+			Todo('Apples', null, 'none'),
+			_initProjects[0]
+		),
+		_linkTodoAndProject(
+			Todo('Feed cats', new Date(), 'medium'),
+			_initProjects[0]
+		)
+	];
+	
+	// Initialize Model
+	let _projects = _getDataFromLocalStorage('projects', _initProjects);
+	_projects = _projects.map(e => _setPrototype(e, _initProjects[0]));
 
-	_setNextId(Todo(), _getDataFromLocalStorage('nextTodoId', 0));
-	_setNextId(Project(), _getDataFromLocalStorage('nextProjectId', 0));
+	let _todos =  _getDataFromLocalStorage('todos', _initTodos);
+	_todos = _todos.map(e => _setPrototype(e, _initTodos[0])).map(_formatTodo);
+
+	_setNextId(_projects[0], _getDataFromLocalStorage('nextProjectId', _projects[0].nextId));
+	_setNextId(_todos[0], _getDataFromLocalStorage('nextTodoId', _todos[0].nextId));
 
 	function _getDataFromLocalStorage(label, dataToStore) {
 		let data = JSON.parse(localStorage.getItem(label));
@@ -143,7 +169,9 @@ const Model = (() => {
 
 	function _linkTodoAndProject(todo, project) {
 		todo.setProjectId(project.id);
-		project.addTodoId(todo.id)
+		project.addTodoId(todo.id);
+
+		return todo;
 	}
 
 	// Bind model to controller via callback
