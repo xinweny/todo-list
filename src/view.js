@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 
 const View = (() => {
 	// Cached elements
@@ -59,8 +59,7 @@ const View = (() => {
 		const editTitleForm = _createElement('input', 'edit-todo-title');
 		editTitleForm.value = todo.title;
 		editTitleForm.style.display = 'none';
-
-		const formattedDate = (todo.dueDate) ? format(todo.dueDate, "d LLL") : '';
+		const formattedDate = (todo.dueDate) ? format(parseISO(todo.dueDate), "d LLL") : '';
 		const dueDateText = _createElement('p', 'todo-duedate', formattedDate);
 
 		const editDueDateForm = _createElement('input', 'edit-todo-duedate');
@@ -244,11 +243,12 @@ const View = (() => {
 		_elements.addTodoForm.addEventListener('submit', event => {
 			event.preventDefault();
 
-			const title = _elements.todoTitleInput.value;
-			const priority = _elements.todoPriorityInput.value;
-			const dueDate = _elements.todoDueDateInput.value;
+			let obj = {};
+			obj.title = _elements.todoTitleInput.value;
+			obj.priority = _elements.todoPriorityInput.value;
+			obj.dueDate = _elements.todoDueDateInput.value;
 
-			handler(title, dueDate, priority, _getTodoGroup());
+			handler(obj, _getTodoGroup());
 
 			_clearInput(_elements.todoTitleInput);
 			_clearInput(_elements.todoDueDateInput);
@@ -269,7 +269,7 @@ const View = (() => {
 	function bindToggleComplete(todo, handler) {
 		const checkbox = _getTodoCardChild(todo.id, 'todo-checkbox');
 		checkbox.addEventListener('click', event => {
-			handler(todo);
+			handler(todo.id, _getTodoGroup(), 'complete', !todo.complete);
 
 			checkbox.checked = todo.complete;
 			checkbox.parentElement.classList.toggle('completed');
@@ -339,10 +339,11 @@ const View = (() => {
 
 	function bindAddProject(handler) {
 		_elements.projectTitleInput.addEventListener('blur', event => {
-			const title = _elements.projectTitleInput.value;
+			const obj = {};
+			obj.title = _elements.projectTitleInput.value;
 
 			if (title != '') {
-				const id = handler(title);
+				const id = handler(obj);
 			_getElement(`.project-card[data-id="${id}"]`).click();
 			}
 

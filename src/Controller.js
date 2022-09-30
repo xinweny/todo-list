@@ -6,7 +6,7 @@ const Controller = (() => {
 	const _filter = {
 		all: todo => todo,
 		today: todo => _filterToday(todo.dueDate),
-		week: todo => _filterThisWeek(todo.dueDate)
+		week: todo => isThisWeek(todo.dueDate)
 	}
 
 	// Date filters
@@ -23,8 +23,6 @@ const Controller = (() => {
 			return false;
 		}
 	}
-
-	const _filterThisWeek = date => isThisWeek(date);
 
 	const _determineTodosRender = group => {
 		if ('projectId' in group) {
@@ -44,11 +42,12 @@ const Controller = (() => {
 		Model.filterTodos(filter);
 	}
 
-	const handleAddTodo = (title, dueDate, priority, group) => {
-		const date = (dueDate) ? new Date(dueDate) : null;
+	const handleAddTodo = (obj, group) => {
 		const project = ('projectId' in group) ? Model.getProject(group.projectId) : null;
 
-		Model.createTodo(title, date, priority, project);
+		if (obj.dueDate == '') obj.dueDate = null;
+
+		Model.createTodo(obj, project);
 		_determineTodosRender(group);
 	}
 
@@ -57,19 +56,15 @@ const Controller = (() => {
 		_determineTodosRender(group);
 	}
 
-	const handleToggleComplete = todo => todo.toggleComplete();
-
 	const handleEditTodo = (id, group, property, value) => {
 		let newValue = value;
-
-		if (property == 'dueDate') newValue = new Date(value);
 
 		Model.editTodo(id, property, newValue);
 		_determineTodosRender(group);
 	}
 
-	const handleAddProject = title => {
-		const model = Model.createProject(title);
+	const handleAddProject = obj => {
+		const model = Model.createProject(obj);
 
 		return model.id;
 	}
@@ -85,7 +80,7 @@ const Controller = (() => {
 		for (const todo of todos) {
 			View.bindShowEditTodoTitleForm(todo);
 			View.bindShowEditTodoDueDateForm(todo);
-			View.bindToggleComplete(todo, handleToggleComplete);
+			View.bindToggleComplete(todo, handleEditTodo);
 			View.bindEditTodoTitle(todo.id, handleEditTodo);
 			View.bindEditTodoDueDate(todo.id, handleEditTodo);
 			View.bindEditTodoPriority(todo.id, handleEditTodo);

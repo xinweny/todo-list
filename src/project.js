@@ -14,12 +14,11 @@ const projectProto = Object.assign({
 	}
 }, idMixin);
 
-export default function Project(title) {
-	let obj = Object.create(projectProto);
+export default function Project(obj) {
+	let object = Object.setPrototypeOf(obj, projectProto);
 
-	obj.setId();
-	obj._todoIds = [];
-	obj.title = title;
+	object.setId();
+	object._todoIds = obj._todoIds || [];
 	
-	return obj;
+	return object;
 };

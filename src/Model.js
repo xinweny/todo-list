@@ -3,39 +3,54 @@ import Project from './Project.js';
 
 const Model = (() => {
 	// Initial data
-	const _initProjects = [
-		Project('Chores'),
-		Project('Grocery list')
-	];
+	function _initProjects() {
+		return [
+			Project({ 
+				title: 'Chores',
+				_todoIds: [0, 1]
+			}),
+			Project({
+				title: 'Grocery list',
+				_todoIds: [2, 3]
+			})
+		];
+	}
 
-	const _initTodos = [
-		_linkTodoAndProject(
-			Todo('Wash dishes', new Date(), 'low'),
-			_initProjects[0]
-		),
-		_linkTodoAndProject(
-			Todo('Feed cats', new Date(), 'medium'),
-			_initProjects[0]
-		),
-		_linkTodoAndProject(
-			Todo('Apples', null, 'none'),
-			_initProjects[0]
-		),
-		_linkTodoAndProject(
-			Todo('Feed cats', new Date(), 'medium'),
-			_initProjects[0]
-		)
-	];
+	function _initTodos() {
+		return [
+			Todo({
+				title: 'Wash dishes',
+				dueDate: '2022-09-30',
+				priority: 'low',
+				projectId: 0
+			}),
+			Todo({
+				title:'Feed cats', 
+				dueDate: '2022-09-30', 
+				priority: 'medium',
+				projectId: 0
+			}),
+			Todo({
+				title: 'Apples', 
+				dueDate: null, 
+				priority: 'none',
+				projectId: 1
+			}),
+			Todo({
+				title: 'Chicken',
+				dueDate: null, 
+				priority: 'medium',
+				projectId: 1
+			})
+		];
+	}
 	
 	// Initialize Model
-	let _projects = _getDataFromLocalStorage('projects', _initProjects);
-	_projects = _projects.map(e => _setPrototype(e, _initProjects[0]));
+	let _projects = _getDataFromLocalStorage('projects', _initProjects());
+	_projects = _projects.map(e => Project(e));
 
-	let _todos =  _getDataFromLocalStorage('todos', _initTodos);
-	_todos = _todos.map(e => _setPrototype(e, _initTodos[0])).map(_formatTodo);
-
-	_setNextId(_projects[0], _getDataFromLocalStorage('nextProjectId', _projects[0].nextId));
-	_setNextId(_todos[0], _getDataFromLocalStorage('nextTodoId', _todos[0].nextId));
+	let _todos =  _getDataFromLocalStorage('todos', _initTodos());
+	_todos = _todos.map(e => Todo(e));
 
 	function _getDataFromLocalStorage(label, dataToStore) {
 		let data = JSON.parse(localStorage.getItem(label));
@@ -49,20 +64,6 @@ const Model = (() => {
 
 	function _saveDataToLocalStorage(label, dataToStore) {
 		localStorage.setItem(label, JSON.stringify(dataToStore));
-	}
-
-	function _setPrototype(obj, instance) {
-		Object.setPrototypeOf(obj, Object.getPrototypeOf(instance));
-		return obj;
-	}
-
-	function _formatTodo(todo) {
-		todo.dueDate = (todo.dueDate) ? new Date(todo.dueDate) : null;
-		return todo;
-	}
-
-	function _setNextId(obj, id) {
-		obj.setNextId(parseInt(id));
 	}
 	
 	function getTodos() {
@@ -103,26 +104,24 @@ const Model = (() => {
 		return todos;
 	}
 
-	function createTodo(title, dueDate, priority, project) {
-		const todo = Todo(title, dueDate, priority);
+	function createTodo(obj, project) {
+		const todo = Todo(obj);
 
 		_todos.push(todo);
 		if (project) _linkTodoAndProject(todo, project);
 
 		_saveDataToLocalStorage('todos', _todos);
-		_saveDataToLocalStorage('nextTodoId', todo.nextId);
 
 		return todo;
 	}
 
-	function createProject(title) {
-		const project = Project(title);
+	function createProject(obj) {
+		const project = Project(obj);
 		_projects.push(project);
 
 		this.onProjectsChanged(_projects);
 
 		_saveDataToLocalStorage('projects', _projects);
-		_saveDataToLocalStorage('nextProjectId', project.nextId);
 
 		return project;
 	}
