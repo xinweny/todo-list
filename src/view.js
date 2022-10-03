@@ -3,7 +3,7 @@ import { format, parseISO } from 'date-fns';
 const View = (() => {
 	// Cached elements
 	const _elements = {
-		allTodosBtn: _getElement('#all-todos'),
+		filterTodosBtns: _getElements('#todo-categories div'),
 		todoGroup: _getElement('#todo-group'),
 		todoCards: _getElement('.todo-cards'),
 		projectCards: _getElement('#project-cards'),
@@ -30,7 +30,9 @@ const View = (() => {
 		return document.querySelector(selector);
 	}
 
-	const _getElements = selector => document.querySelectorAll(selector);
+	function _getElements(selector) {
+		return Array.from(document.querySelectorAll(selector));
+	}
 
 	const _appendChild = (parent, child) => _elements[parent].appendChild(child);
 
@@ -59,6 +61,8 @@ const View = (() => {
 		const editTitleForm = _createElement('input', 'edit-todo-title');
 		editTitleForm.value = todo.title;
 		editTitleForm.style.display = 'none';
+
+		const dueDateDiv = _createElement('div', 'todo-duedate-div');
 		const formattedDate = (todo.dueDate) ? format(parseISO(todo.dueDate), "d LLL") : '';
 		const dueDateText = _createElement('p', 'todo-duedate', formattedDate);
 
@@ -66,6 +70,7 @@ const View = (() => {
 		editDueDateForm.type = "date";
 		editDueDateForm.value = todo.dueDate;
 		editDueDateForm.style.display = (todo.dueDate) ? 'none' : 'block';
+		_appendChildren(dueDateDiv, [dueDateText, editDueDateForm]);
 
 		const deleteBtn = _createElement('button', 'delete-todo-btn');
 		deleteBtn.textContent = 'x';
@@ -78,27 +83,21 @@ const View = (() => {
 			todoPriority.appendChild(option);
 		}
 
-		switch (todo.priority) {
-			case 'low':
-				todoPriority.value = 'low';
-				todoCard.style.borderLeftColor = 'green'; break;
-			case 'medium':
-				todoPriority.value = 'medium';
-				todoCard.style.borderLeftColor = 'orange'; break;
-			case 'high':
-				todoPriority.value = 'high';
-				todoCard.style.borderLeftColor = 'red'; break;
-			default:
-				break;
-		}
+		const colorMap = {
+			none: 'gray',
+			low: 'green',
+			medium: 'yellow',
+			high: 'red'
+		};
+
+		_setPriorityStyling(todoPriority, todoCard, todo.priority, colorMap[todo.priority]);
 
 		_appendChildren(todoCard, [
 			checkbox,
 			titleText,
 			editTitleForm,
-			dueDateText,
-			editDueDateForm,
 			todoPriority,
+			dueDateDiv,
 			deleteBtn
 		]);
 
@@ -111,15 +110,22 @@ const View = (() => {
 
 		projectCard.dataset.id = project.id;
 
+		const titleDiv = _createElement('div', 'project-title-div');
 		const titleText = _createElement('p')
 		titleText.textContent = project.title;
+
+		const todoCounter = _createElement('div', 'todo-counter');
+		todoCounter.textContent = project._todoIds.length;
+
+		_appendChildren(titleDiv, [titleText, todoCounter]);
 
 		const deleteBtn = _createElement('button', 'delete-project-btn');
 		deleteBtn.dataset.id = project.id;
 		deleteBtn.textContent = 'x';
 
+
 		_appendChildren(projectCard, [
-			titleText,
+			titleDiv,
 			deleteBtn
 		]);
 
@@ -148,7 +154,7 @@ const View = (() => {
 		});
 	}
 
-	const _getTodoGroup = () => _elements.todoGroup.dataset;
+	const _getTodoDataset = () => _elements.todoGroup.dataset;
 
 	const _toggleShowHide = (showElement, hideElement) => {
 		hideElement.style.display = 'none';
@@ -157,12 +163,19 @@ const View = (() => {
 
 	const _getTodoCardChild = (id, cls) => _getElement(`.todo-card[data-id="${id}"] .${cls}`);
 
-	// Render elements
+	function _setPriorityStyling(todoPriority, todoCard, text, color) {
+		todoPriority.value = text;
+		todoPriority.style.color = color;
+		todoPriority.style.borderColor = color;
+		todoCard.style.borderLeftColor = color;
+	}
+
+	// Render dynamic elements
 	function displayTodos(todos) {
 		_clearElement(_elements.todoCards);
 
-		for (const todo of todos) {
-			const todoCard = _createTodoCard(todo);
+		for (let i = todos.length - 1; i >= 0; i--) {
+			const todoCard = _createTodoCard(todos[i]);
 			_appendChild('todoCards', todoCard);
 		}
 	}
@@ -177,6 +190,14 @@ const View = (() => {
 		}
 	}
 
+	function updateTodoFilterCounter(group, length) {
+
+		const selector = (typeof group == 'number') ? `.project-card[data-id="${group}"] .todo-counter` : `#${group}-todos .todo-counter`;
+
+		const counter = _getElement(selector);
+		counter.textContent = length;
+	}
+
 	// Binders for controller handlers to event listeners
 	function bindShowCategoryTodos(category, handler) {
 		const categoryDiv = _getElement(`#${category}-todos`);
@@ -184,7 +205,7 @@ const View = (() => {
 		categoryDiv.addEventListener('click', event => {
 			handler(category);
 
-			_elements.todoGroup.innerText = event.target.textContent;
+			_elements.todoGroup.innerText = `${category.charAt(0).toUpperCase() + category.slice(1)}`;
 			_elements.todoGroup.removeAttribute('data-project-id');
 			_elements.todoGroup.dataset.filter = category;
 
@@ -248,7 +269,7 @@ const View = (() => {
 			obj.priority = _elements.todoPriorityInput.value;
 			obj.dueDate = _elements.todoDueDateInput.value;
 
-			handler(obj, _getTodoGroup());
+			handler(obj, _getTodoDataset());
 
 			_clearInput(_elements.todoTitleInput);
 			_clearInput(_elements.todoDueDateInput);
@@ -262,14 +283,14 @@ const View = (() => {
 		deleteTodoBtn.addEventListener('click', event => {
 			event.stopPropagation();
 
-			handler(todo, _getTodoGroup());
+			handler(todo, _getTodoDataset());
 		});
 	}
 
 	function bindToggleComplete(todo, handler) {
 		const checkbox = _getTodoCardChild(todo.id, 'todo-checkbox');
 		checkbox.addEventListener('click', event => {
-			handler(todo.id, _getTodoGroup(), 'complete', !todo.complete);
+			handler(todo.id, _getTodoDataset(), 'complete', !todo.complete);
 
 			checkbox.checked = todo.complete;
 			checkbox.parentElement.classList.toggle('completed');
@@ -283,7 +304,7 @@ const View = (() => {
 			const todoTitle = _getTodoCardChild(id, 'todo-title');
 			const newTitle = editTodoForm.value;
 
-			handler(id, _getTodoGroup(), 'title', newTitle);
+			handler(id, _getTodoDataset(), 'title', newTitle);
 
 			_toggleShowHide(todoTitle, editTodoForm);
 			todoTitle.textContent = newTitle;
@@ -299,7 +320,7 @@ const View = (() => {
 			const todoDueDate = _getTodoCardChild(id, 'todo-duedate');
 			const newDueDate = editDueDateForm.value;
 
-			handler(id, _getTodoGroup(), 'dueDate', newDueDate);
+			handler(id, _getTodoDataset(), 'dueDate', newDueDate);
 			todoDueDate.textContent = newDueDate;
 		});
 	}
@@ -310,16 +331,16 @@ const View = (() => {
 		editPriorityForm.addEventListener('change', event => {
 			const newPriority = editPriorityForm.value;
 
-			handler(id, _getTodoGroup(), 'priority', newPriority);
+			handler(id, _getTodoDataset(), 'priority', newPriority);
 		})
 	}
 
 	function bindToggleProjectForm() {
 		_elements.addProjectBtn.addEventListener('click', event => {
-			const display = _elements.projectTitleInput.style.display;
+			const formDisplay = _elements.projectTitleInput.style.display;
 			const title = _elements.projectTitleInput.value;
 
-			if (display == '') {
+			if (formDisplay == 'none' || formDisplay == '') {
 				_elements.projectTitleInput.style.display = 'block';
 				_elements.projectTitleInput.focus();
 			} else {
@@ -342,13 +363,12 @@ const View = (() => {
 			const obj = {};
 			obj.title = _elements.projectTitleInput.value;
 
-			if (title != '') {
+			if (obj.title != '') {
 				const id = handler(obj);
-			_getElement(`.project-card[data-id="${id}"]`).click();
+				_getElement(`.project-card[data-id="${id}"]`).click();
 			}
 
 			_clearInput(_elements.projectTitleInput);
-			_elements.projectTitleInput.style.display = 'none';
 		});
 
 		_elements.projectTitleInput.addEventListener('keydown', event => {
@@ -378,13 +398,14 @@ const View = (() => {
 
 			handler(project);
 
-			_elements.allTodosBtn.click();
+			_elements.filterTodosBtns[0].click();
 		});
 	}
 	
 	return {
 		displayTodos,
 		displayProjects,
+		updateTodoFilterCounter,
 		bindToggleProjectForm,
 		bindShowCategoryTodos,
 		bindShowProjectTodos,

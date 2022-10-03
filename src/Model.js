@@ -46,28 +46,38 @@ const Model = (() => {
 	}
 	
 	// Initialize Model
-	let _projects = _getDataFromLocalStorage('projects', _initProjects());
-	_projects = _projects.map(e => Project(e));
+	let _projects = _getDataFromLocalStorage('projects', Project, _initProjects);
+	let _todos =  _getDataFromLocalStorage('todos', Todo, _initTodos);
 
-	let _todos =  _getDataFromLocalStorage('todos', _initTodos());
-	_todos = _todos.map(e => Todo(e));
+	_setNextId(_projects);
+	_setNextId(_todos);
 
-	function _getDataFromLocalStorage(label, dataToStore) {
+	function _getDataFromLocalStorage(label, cls, initData) {
 		let data = JSON.parse(localStorage.getItem(label));
 
 		if (!data) {
-			_saveDataToLocalStorage(label, dataToStore);
-			data = dataToStore;
+			data = initData();
+			_saveDataToLocalStorage(label, data);
+		} else {
+			data = data.map(e => cls(e));
 		};
+
 		return data;
 	}
 
 	function _saveDataToLocalStorage(label, dataToStore) {
 		localStorage.setItem(label, JSON.stringify(dataToStore));
 	}
+
+	function _setNextId(array) {
+		if (array.length > 0) {
+			const nextId = Math.max(...array.map(e => e.id)) + 1;
+			array[0].setNextId(nextId);
+		}
+	}
 	
-	function getTodos() {
-		this.onTodosChanged(_todos);
+	function getTodos(change=true) {
+		if (change) this.onTodosChanged(_todos);
 
 		return _todos;
 	};
@@ -108,7 +118,10 @@ const Model = (() => {
 		const todo = Todo(obj);
 
 		_todos.push(todo);
-		if (project) _linkTodoAndProject(todo, project);
+		if (project) {
+			_linkTodoAndProject(todo, project);
+			_saveDataToLocalStorage('projects', _projects);
+		}
 
 		_saveDataToLocalStorage('todos', _todos);
 
@@ -140,6 +153,7 @@ const Model = (() => {
 		project.title = title;
 
 		this.onProjectsChanged(_projects);
+	
 		_saveDataToLocalStorage('projects', _projects);
 	}
 
@@ -150,6 +164,7 @@ const Model = (() => {
 		if (todo.projectId) {
 			const project = getProject(todo.projectId);
 			project.deleteTodoId();
+			_saveDataToLocalStorage('projects', _projects);
 		};
 
 		_saveDataToLocalStorage('todos', _todos);
@@ -163,6 +178,8 @@ const Model = (() => {
 		_projects.splice(index, 1);
 
 		this.onProjectsChanged(_projects);
+
+		_saveDataToLocalStorage('todos', _todos);
 		_saveDataToLocalStorage('projects', _projects);
 	}
 

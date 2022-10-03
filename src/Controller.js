@@ -1,27 +1,12 @@
 import Model from './Model.js';
 import View from './View.js';
-import { isThisWeek } from 'date-fns';
+import { isThisWeek, isToday, parseISO } from 'date-fns';
 
 const Controller = (() => {
 	const _filter = {
 		all: todo => todo,
-		today: todo => _filterToday(todo.dueDate),
-		week: todo => isThisWeek(todo.dueDate)
-	}
-
-	// Date filters
-	function _filterToday(date) {
-		const today = new Date();
-
-		if (date) {
-			return (
-				date.getDate() == today.getDate() &&
-				date.getMonth() == today.getMonth() &&
-				date.getYear() == today.getYear()
-				);
-		} else {
-			return false;
-		}
+		today: todo => isToday(parseISO(todo.dueDate)),
+		week: todo => isThisWeek(parseISO(todo.dueDate))
 	}
 
 	const _determineTodosRender = group => {
@@ -47,13 +32,16 @@ const Controller = (() => {
 
 		if (obj.dueDate == '') obj.dueDate = null;
 
-		Model.createTodo(obj, project);
+		const todo = Model.createTodo(obj, project);
 		_determineTodosRender(group);
+
+		if (project) View.updateTodoFilterCounter(project.id, project.getTodoIds().length);
 	}
 
 	const handleDeleteTodo = (todo, group) => {
 		Model.deleteTodo(todo);
 		_determineTodosRender(group);
+		if (todo.projectId) View.updateTodoFilterCounter(todo.projectId, Model.getProject(todo.projectId).getTodoIds().length);
 	}
 
 	const handleEditTodo = (id, group, property, value) => {
@@ -77,6 +65,12 @@ const Controller = (() => {
 	function onTodosChanged(todos) {
 		View.displayTodos(todos);
 
+		const allTodos = Model.getTodos(false);
+
+		Object.keys(_filter).forEach((key, i) => {
+			View.updateTodoFilterCounter(key, allTodos.filter(_filter[key]).length);
+		});
+		
 		for (const todo of todos) {
 			View.bindShowEditTodoTitleForm(todo);
 			View.bindShowEditTodoDueDateForm(todo);

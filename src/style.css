@@ -1,3 +1,11 @@
+:root {
+	--cool-gray: #6A7A99;
+	--cadet-gray: #92A7BA;
+	--light-blue: #B8D0E2;
+	--smoke: #D7DEE4;
+	--platinum: #E8ECEF;
+}
+
 * {
 	padding: 0;
 	margin: 0;
@@ -7,11 +15,21 @@ li {
 	list-style-type: none;
 }
 
+a {
+	text-decoration: none;
+}
+
+button {
+	background-color: transparent;
+	border: none;
+}
+
 #root {
 	display: grid;
 	grid-template-columns: auto 1fr;
 	grid-template-rows: auto 1fr auto;
 	height: 100vh;
+	width: 100vw;
 }
 
 #header {
@@ -19,6 +37,7 @@ li {
 	grid-column: 1 / -1;
 	padding: 16px;
 	gap: 16px;
+	background-color: var(--cool-gray);
 }
 
 #header img {
@@ -28,6 +47,55 @@ li {
 
 #sidebar {
 	padding: 16px;
+	background-color: var(--cadet-gray);
+	width: 150px;
+}
+
+.sidebar-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.sidebar-btn {
+	padding: 4px 8px;
+	border-radius: 8px;
+	transition: background-color 1s;
+}
+
+.clicked {
+	background-color: var(--light-blue);
+	transition: background-color 1s;
+}
+
+#todo-categories div, .project-title-div {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+}
+
+.todo-counter {
+	font-size: 0.75rem;
+	font-weight: bold;
+	color: white;
+	background-color: var(--cool-gray);
+	padding: 0px 4px;
+	width: auto;
+	height: auto;
+	border-radius: 8px;
+}
+
+#add-project-btn {
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: white;
+	padding: 0px 6px;
+	border-radius: 50%;
+	background-color: var(--cool-gray);
+}
+
+#content {
+	background-color: var(--platinum);
 }
 
 .project-card {
@@ -38,16 +106,6 @@ li {
 
 #project-title {
 	display: none;
-}
-
-.sidebar-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-
-.clicked {
-	background-color: aqua;
 }
 
 .clicked .delete-project-btn, .sidebar-btn:hover .delete-project-btn, .todo-card:hover .delete-todo-btn {
@@ -63,34 +121,99 @@ li {
 }
 
 #content {
-	height: 100%;
 	padding: 16px;
+	display: grid;
+	grid-template-rows: auto auto minmax(250px, 1fr);
+	min-height: 0;
 }
 
-#edit-project-title {
-	display: none;
+#add-todo-form {
+	display: flex;
+	align-items: stretch;
+	margin-bottom: 16px;
+}
+
+#add-todo-title {
+	border-radius: 8px 0px 0px 8px;
+	width: 40vw;
+	padding-left: 16px;
+}
+
+#add-todo-priority {
+	border: none;
+	border-radius: 0px 8px 8px 0px;
+}
+
+#add-todo-duedate {
+	margin: 0px 8px;
+}
+
+#add-todo-btn {
+	font-weight: bold;
+	font-size: 1.2rem;
+	height: 25px;
+	width: 25px;
+	background-color: var(--cool-gray);
+	margin: auto 0px;
+	border-radius: 50%;
+	color: white;
+}
+
+input {
+	border: none;
+	border-radius: 8px;
+	padding: 4px;
 }
 
 input[type="date"]::-webkit-datetime-edit {
 	display: none;
 }
 
+input[type="date"] {
+	border: none;
+	background-color: transparent;
+}
+
+#edit-project-title {
+	display: none;
+}
+
+.todo-cards {
+	padding-bottom: 16px;
+	overflow: scroll;
+}
+
 .todo-card {
-	width: 500px;
-	display: flex;
+	width: 75vw;
+	display: grid;
+	grid-template-columns: auto 1fr auto 48px 24px;
 	align-items: center;
-	justify-content: space-around;
-	border-left: 6px solid black;
-	padding: 8px;
+	border-left: 6px solid gray;
+	padding: 8px 8px 8px 16px;
+	background-color: var(--smoke);
+	gap: 16px;
+}
+
+.todo-title {
+	width: 100%;
+	overflow-wrap: anywhere;
+}
+
+.todo-duedate-div {
+	justify-self: center;
+}
+
+.todo-duedate {
+	font-size: 0.75rem;
 }
 
 .todo-priority {
 	appearance: none;
-}
-
-.delete-todo-btn {
 	background-color: transparent;
-	border: none;
+	border-radius: 4px;
+	padding: 2px;
+	text-align: center;
+	font-size: 0.25rem;
 }
 
 .completed p:first-of-type {
@@ -100,4 +223,5 @@ input[type="date"]::-webkit-datetime-edit {
 #footer {
 	grid-column: 1 / -1;
 	padding: 16px;
+	background-color: var(--cool-gray);
 }

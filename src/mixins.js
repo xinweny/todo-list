@@ -3,7 +3,7 @@ export const idMixin = {
 		Object.getPrototypeOf(this).nextId = id;
 	},
 	setId() {
-		if (typeof this.id != 'number') {
+		if (!this.id) {
 			this.id = Object.getPrototypeOf(this).nextId;
 			Object.getPrototypeOf(this).nextId += 1;
 		}
